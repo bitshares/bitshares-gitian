@@ -1,0 +1,53 @@
+#!/bin/sh
+
+set -e
+
+cd "`dirname "$0"`/vendor/gitian-builder"
+mkdir -p var
+export PATH="$PATH:`pwd`/bin:`pwd`/libexec"
+
+BUILD=
+SIGN=
+VERIFY=
+while [ "$1" = "-b" -o "$1" = "-s" -o "$1" = "-v" ]; do
+    case "$1" in
+      -b) BUILD=1; ;;
+      -s) SIGN=1; KEY_ID="$2"; shift;  ;;
+      -v) VERIFY=1; ;;
+    esac
+    shift
+done
+
+if [ -z "$BUILD$SIGN$VERIFY" ]; then
+    BUILD=1
+    SIGN=1
+    KEY_ID="$1"
+    shift
+fi
+
+if [ "$#" -lt 1 ]; then
+    echo "Usage:\t$0 [-b | -s KEY_ID | -v] VERSION [builder-options]" 1>&2
+    echo "\t$0 KEY_ID VERSION [builder-options]" 1>&2
+    echo "-b\tbuild" 1>&2
+    echo "-s\tsign" 1>&2
+    echo "-v\tverify" 1>&2
+    echo "\t(will build and sign with KEY_ID if neither option is present)" 1>&2
+    echo "VERSION\tis the BitShares release version to build" 1>&2
+    echo "KEY_ID\tis the GPG key ID to use for signing" 1>&2
+    echo "" 1>&2
+    echo "builder-options:" 1>&2
+    gbuild --help 2>&1 | tail -n +2 1>&2
+    echo "" 1>&2
+    echo "You should allow at least 4G RAM for the build (-m 4096), more if" 1>&2
+    echo "you want to build with more than one core!" 1>&2
+    exit 1
+fi
+
+VERSION="$1"
+shift
+
+[ -z "$BUILD" ]  || gbuild ../../descriptors/bitshares-core-linux.yml -c bitshares="$VERSION" "$@"
+[ -z "$SIGN" ]   || gsign --signer "$KEY_ID" --destination ../../signatures --release "$VERSION"-linux \
+                          ../../descriptors/bitshares-core-linux.yml
+[ -z "$VERIFY" ] || gverify --destination ../../signatures --release "$VERSION"-linux \
+                            ../../descriptors/bitshares-core-linux.yml

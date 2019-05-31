@@ -1,0 +1,70 @@
+---
+name: bithares-core-linux
+enable_cache: true
+distro: ubuntu
+suites:
+- bionic
+architectures:
+- amd64
+packages:
+- g++
+- git
+- cmake
+- ccache
+- autoconf
+- libtool
+- automake
+- doxygen
+- libboost1.65-all-dev
+- libcurl4-openssl-dev
+- libssl-dev
+remotes:
+- url: https://github.com/bitshares/bitshares-core.git
+  dir: bitshares
+files: []
+script: |
+  set -e -o pipefail
+  
+  if test -n "$GBUILD_CACHE_ENABLED"; then
+    export CCACHE_DIR="${GBUILD_PACKAGE_CACHE}/ccache"
+    export CCACHE_COMPRESS=true
+    mkdir -p "${CCACHE_DIR}"
+    pushd "${GBUILD_PACKAGE_CACHE}"
+    if [ -r ccache.tar ]; then
+        tar xf ccache.tar
+    fi
+    popd
+    ccache -s
+  else
+    export CCACHE_DISABLE=true
+  fi
+  
+  cd bitshares
+  cp libraries/wallet/wallet.cpp{,.orig}
+  sed -i '/__DATE__/d' libraries/wallet/wallet.cpp
+
+  mkdir build
+  cd build
+  cmake -D CMAKE_BUILD_TYPE=Release \
+        -D CMAKE_C_COMPILER_LAUNCHER=ccache \
+        -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
+        ..
+  make $MAKEOPTS witness_node cli_wallet
+  ARTIFACTS="programs/witness_node/witness_node programs/cli_wallet/cli_wallet"
+  strip $ARTIFACTS
+  TIMESTAMP="$(grep define.*TIMESTAMP libraries/utilities/git_revision.cpp | cut -d\  -f 3)"
+  touch --date $(date -u --date="@$TIMESTAMP" +%Y-%m-%dT%H:%M:%SZ) $ARTIFACTS
+  tar cfj "${OUTDIR}/bitshares-`git describe --tags`-linux-amd64-bin.tar.bz2" \
+      --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 \
+      $ARTIFACTS
+
+  cd ..
+  mv libraries/wallet/wallet.cpp{.orig,}
+  
+  if test -n "$GBUILD_CACHE_ENABLED"; then
+    # pack ccache into one file to keep the manifest short
+    pushd "${GBUILD_PACKAGE_CACHE}"
+    tar cf ccache.tar ccache
+    rm -rf ccache
+    popd
+  fi
