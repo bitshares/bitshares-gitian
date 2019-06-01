@@ -97,7 +97,7 @@ Example: build version 3.1.0 using 3 cores and 8 gigabytes of RAM, then sign wit
 
 `run-gitian -b -s 2d2746cc 3.1.0 -m 8192 -j 3`
 
-This will create a subdirectory under `signatures`. If you want to contribute, please commit your signature and create a pull request.
+This will create a subdirectory under `signatures`. If you want to contribute, please commit your signature and create a pull request. Pull must include your public key file in `signers` folder(`gpg --armor --export 2d2746cc > signers/pc_2d2746cc.asc`).
 
 ### Verify
 
