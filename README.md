@@ -95,7 +95,7 @@ Enter `./run-gitian --help` to see the available options.
 
 Example: build version 3.1.0 using 3 cores and 8 gigabytes of RAM, then sign with key ID 2d2746cc:
 
-`run-gitian -b -s 2d2746cc 3.1.0 -m 8192 -j 3`
+`./run-gitian -b -s 2d2746cc 3.1.0 -m 8192 -j 3`
 
 This will create a subdirectory under `signatures`. If you want to contribute, please commit your signature and create a pull request.
 
@@ -103,4 +103,4 @@ This will create a subdirectory under `signatures`. If you want to contribute, p
 
 Example: verify version 3.1.0:
 
-`run-gitian -v 3.1.0`
+`./run-gitian -v 3.1.0`
