@@ -104,3 +104,15 @@ This will create a subdirectory under `signatures`. If you want to contribute, p
 Example: verify version 3.1.0:
 
 `./run-gitian -v 3.1.0`
+
+### Use binary
+
+A `bz2` file(`bitshares-3.1.0-linux-amd64-bin.tar.bz2`) will be generated at `bitshares-gitian/vendor/gitian-builder/build/out/`  after any `./run-gitan -b` is executed.
+
+Example: use built witness_node binary: 
+
+```
+cd vendor/gitian-builder/build/out/
+tar xvfj bitshares-3.1.0-linux-amd64-bin.tar.bz2
+./programs/witness_node
+```
