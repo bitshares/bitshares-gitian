@@ -10,14 +10,23 @@ export PATH="$PATH:`pwd`/bin:`pwd`/libexec"
 BUILD=
 SIGN=
 VERIFY=
-while [ "$1" = "-b" -o "$1" = "-s" -o "$1" = "-v" ]; do
+OS=linux
+while [ "$1" = "-b" -o "$1" = "-s" -o "$1" = "-v" -o "$1" = "-O" ]; do
     case "$1" in
       -b) BUILD=1; ;;
       -s) SIGN=1; KEY_ID="$2"; shift;  ;;
       -v) VERIFY=1; ;;
+      -O) OS="$2"; shift;;
     esac
     shift
 done
+
+case "$OS" in
+    linux|win) true; ;;
+    *) echo "Unsupported OS '$OS', try 'linux' or 'win' instead!" 1>&2
+       exit 1
+       ;;
+esac
 
 if [ -z "$BUILD$SIGN$VERIFY" ]; then
     BUILD=1
@@ -29,7 +38,16 @@ fi
 if [ -n "$BUILD" ]; then
     tar cfz inputs/supplement.tar.gz -C ../.. supplement
 
-    while read url sha; do
+    (
+        echo https://curl.haxx.se/download/curl-7.65.3.tar.bz2 0a855e83be482d7bc9ea00e05bdb1551a44966076762f9650959179c89fce509
+        if [ "$OS" = "win" ]; then
+            cat <<_EOL_
+https://dl.bintray.com/boostorg/release/1.69.0/source/boost_1_69_0.tar.bz2 8f32d4617390d1c2d16f26a27ab60d97807b35440d45891fa340fc2648b04406
+https://www.openssl.org/source/openssl-1.1.1c.tar.gz f6fb3079ad15076154eda9413fed42877d668e7069d9b87396d0804fdb3f4c90
+https://zlib.net/zlib-1.2.11.tar.gz c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1
+_EOL_
+        fi
+    ) | while read url sha; do
         FILE="${url##*/}"
         if [ ! -r "inputs/$FILE" ]; then
             echo "Downloading $FILE..."
@@ -38,17 +56,16 @@ if [ -n "$BUILD" ]; then
         sha256sum "inputs/$FILE" \
           | grep -q "$sha" \
           || ( echo "inputs/$FILE is wrong!?" 1>&2 && exit 1 )
-    done <<_EOL_
-https://curl.haxx.se/download/curl-7.65.3.tar.bz2 0a855e83be482d7bc9ea00e05bdb1551a44966076762f9650959179c89fce509
-_EOL_
+      done
 fi
 
 if [ "$#" -lt 1 ]; then
-    echo "Usage:\t$0 [-b | -s KEY_ID | -v] VERSION [builder-options]" 1>&2
+    echo "Usage:\t$0 [-b | -s KEY_ID | -v] [-O linux|win] VERSION [builder-options]" 1>&2
     echo "\t$0 KEY_ID VERSION [builder-options]" 1>&2
     echo "-b\tbuild" 1>&2
     echo "-s\tsign" 1>&2
     echo "-v\tverify" 1>&2
+    echo "-O\tchoose target operating system linux or win, defaults to linux" 1>&2
     echo "\t(will build and sign with KEY_ID if neither option is present)" 1>&2
     echo "VERSION\tis the BitShares release version to build" 1>&2
     echo "KEY_ID\tis the GPG key ID to use for signing" 1>&2
@@ -64,8 +81,8 @@ fi
 VERSION="$1"
 shift
 
-[ -z "$BUILD" ]  || gbuild ../../descriptors/bitshares-core-linux.yml -c bitshares="$VERSION" "$@"
-[ -z "$SIGN" ]   || gsign --signer "$KEY_ID" --destination ../../signatures --release "$VERSION"-linux \
-                          ../../descriptors/bitshares-core-linux.yml
-[ -z "$VERIFY" ] || gverify --destination ../../signatures --release "$VERSION"-linux \
-                            ../../descriptors/bitshares-core-linux.yml
+[ -z "$BUILD" ]  || gbuild "../../descriptors/bitshares-core-$OS.yml" -c bitshares="$VERSION" "$@"
+[ -z "$SIGN" ]   || gsign --signer "$KEY_ID" --destination ../../signatures --release "$VERSION"-"$OS" \
+                          "../../descriptors/bitshares-core-$OS.yml"
+[ -z "$VERIFY" ] || gverify --destination ../../signatures --release "$VERSION"-"$OS" \
+                            "../../descriptors/bitshares-core-$OS.yml"
