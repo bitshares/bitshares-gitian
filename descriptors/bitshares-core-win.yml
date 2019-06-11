@@ -124,6 +124,7 @@ script: |
         -D CMAKE_CXX_COMPILER=/usr/bin/x86_64-w64-mingw32-g++-posix \
         -D CMAKE_SYSTEM_NAME=Windows \
         -D CURL_STATICLIB=ON \
+        -D CMAKE_EXE_LINKER_FLAGS=--static \
         -D CMAKE_FIND_ROOT_PATH="/usr/lib/gcc/x86_64-w64-mingw32/7.3-win32/;$LIBS" \
         -D CMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
         -D CMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
