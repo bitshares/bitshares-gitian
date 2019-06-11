@@ -21,19 +21,19 @@ while [ "$1" = "-b" -o "$1" = "-s" -o "$1" = "-v" -o "$1" = "-O" ]; do
     shift
 done
 
-case "$OS" in
-    linux|win) true; ;;
-    *) echo "Unsupported OS '$OS', try 'linux' or 'win' instead!" 1>&2
-       exit 1
-       ;;
-esac
-
 if [ -z "$BUILD$SIGN$VERIFY" ]; then
     BUILD=1
     SIGN=1
     KEY_ID="$1"
     shift
 fi
+
+case "$OS" in
+    linux|win) true; ;;
+    *) echo "Unsupported OS '$OS', try 'linux' or 'win' instead!" 1>&2
+       exit 1
+       ;;
+esac
 
 if [ -n "$BUILD" ]; then
     tar cfz inputs/supplement.tar.gz -C ../.. supplement
