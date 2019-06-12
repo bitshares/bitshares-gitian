@@ -30,6 +30,7 @@ This repository contains the following components:
 * `descriptors` - contains `.yml`-files describing each build type, where "build type" refers to a combination of software package, operating system and architecture
 * `signatures` - contains individual user's build "manifest" and GPG signature
 * `signers` - contains some public keys of regular signers for convenience.  **Do not trust a key just because it is listed here!**
+* `supplement` - contains additional files to be included in binary distributions
 * `vendor/gitian-builder` - submodule of the original gitian framework, as used in this project
 
 ## Preparation

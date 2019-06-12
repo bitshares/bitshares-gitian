@@ -4,6 +4,7 @@ set -e
 
 cd "`dirname "$0"`/vendor/gitian-builder"
 mkdir -p var
+mkdir -p inputs
 export PATH="$PATH:`pwd`/bin:`pwd`/libexec"
 
 BUILD=
@@ -23,6 +24,10 @@ if [ -z "$BUILD$SIGN$VERIFY" ]; then
     SIGN=1
     KEY_ID="$1"
     shift
+fi
+
+if [ -n "$BUILD" ]; then
+    tar cfz inputs/supplement.tar.gz -C ../.. supplement
 fi
 
 if [ "$#" -lt 1 ]; then

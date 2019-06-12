@@ -21,7 +21,8 @@ packages:
 remotes:
 - url: https://github.com/bitshares/bitshares-core.git
   dir: bitshares
-files: []
+files:
+- supplement.tar.gz
 script: |
   set -e -o pipefail
   
@@ -50,13 +51,23 @@ script: |
         -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
         ..
   make $MAKEOPTS witness_node cli_wallet
+
+  rm -rf DIST
+  mkdir -p DIST
   ARTIFACTS="programs/witness_node/witness_node programs/cli_wallet/cli_wallet"
   strip $ARTIFACTS
+  mv $ARTIFACTS DIST
+  tar xfz ../../supplement.tar.gz
+  mv supplement/README-core.md DIST/README.md
+  mv supplement/licenses DIST/licenses
+  rm -f DIST/licenses/LGPL* DIST/licenses/OpenSSL.txt
+  mv supplement/LICENSE-core-linux.txt DIST/LICENSE.txt
+  cp ../libraries/fc/vendor/websocketpp/COPYING DIST/licenses/WebsocketPP.txt
   TIMESTAMP="$(grep define.*TIMESTAMP libraries/utilities/git_revision.cpp | cut -d\  -f 3)"
-  touch --date $(date -u --date="@$TIMESTAMP" +%Y-%m-%dT%H:%M:%SZ) $ARTIFACTS
-  tar cfj "${OUTDIR}/bitshares-`git describe --tags`-linux-amd64-bin.tar.bz2" \
+  find DIST | xargs touch --date $(date -u --date="@$TIMESTAMP" +%Y-%m-%dT%H:%M:%SZ)
+  tar cfj "${OUTDIR}/bitshares-core-`git describe --tags`-linux-amd64-bin.tar.bz2" \
       --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 \
-      $ARTIFACTS
+      -C DIST .
 
   cd ..
   mv libraries/wallet/wallet.cpp{.orig,}
