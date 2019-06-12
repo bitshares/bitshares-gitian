@@ -25,7 +25,7 @@ files:
 - supplement.tar.gz
 script: |
   set -e -o pipefail
-  
+
   if test -n "$GBUILD_CACHE_ENABLED"; then
     export CCACHE_DIR="${GBUILD_PACKAGE_CACHE}/ccache"
     export CCACHE_COMPRESS=true
@@ -43,6 +43,9 @@ script: |
   cd bitshares
   cp libraries/wallet/wallet.cpp{,.orig}
   sed -i '/__DATE__/d' libraries/wallet/wallet.cpp
+  # Workaround for #1791
+  sed -i '/target_link_lib/s=..Boost_LIBRARIES.==;/target_link_lib/s=ZLIB_LIBRARIES.=\0 ${Boost_LIBRARIES}=' \
+      libraries/fc/CMakeLists.txt
 
   mkdir build
   cd build
@@ -71,7 +74,7 @@ script: |
 
   cd ..
   mv libraries/wallet/wallet.cpp{.orig,}
-  
+
   if test -n "$GBUILD_CACHE_ENABLED"; then
     # pack ccache into one file to keep the manifest short
     pushd "${GBUILD_PACKAGE_CACHE}"
