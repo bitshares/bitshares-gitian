@@ -29,7 +29,7 @@ if [ -z "$BUILD$SIGN$VERIFY" ]; then
 fi
 
 case "$OS" in
-    linux|win) true; ;;
+    linux|win|osx) true; ;;
     *) echo "Unsupported OS '$OS', try 'linux' or 'win' instead!" 1>&2
        exit 1
        ;;
@@ -40,12 +40,22 @@ if [ -n "$BUILD" ]; then
 
     (
         echo https://curl.haxx.se/download/curl-7.65.3.tar.bz2 0a855e83be482d7bc9ea00e05bdb1551a44966076762f9650959179c89fce509
-        if [ "$OS" = "win" ]; then
+        if [ "$OS" = "win" -o "$OS" = "osx" ]; then
             cat <<_EOL_
 https://dl.bintray.com/boostorg/release/1.69.0/source/boost_1_69_0.tar.bz2 8f32d4617390d1c2d16f26a27ab60d97807b35440d45891fa340fc2648b04406
 https://www.openssl.org/source/openssl-1.1.1c.tar.gz f6fb3079ad15076154eda9413fed42877d668e7069d9b87396d0804fdb3f4c90
 https://zlib.net/zlib-1.2.11.tar.gz c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1
 _EOL_
+        fi
+        if [ "$OS" = "osx" ]; then
+            cat <<_EOL_
+https://github.com/tpoechtrager/osxcross/archive/e0a171828a72a0d7ad4409489033536590008ebf.tar.gz 7ef00c27b76745d4b44e13f291df60318588aa7b5d1788aeba5aca569ac7e989
+_EOL_
+            if [ ! -r inputs/MacOSX10.15.sdk.tar.xz ]; then
+                echo "Please download MacOSX10.15.sdk.tar.xz and place it in `pwd`/inputs." 1>&2
+                echo "Also be sure to read and understand Apple's licensing terms." 1>&2
+                exit 1
+            fi
         fi
     ) | while read url sha; do
         FILE="${url##*/}"
@@ -60,7 +70,7 @@ _EOL_
 fi
 
 if [ "$#" -lt 1 ]; then
-    echo "Usage:\t$0 [-b | -s KEY_ID | -v] [-O linux|win] VERSION [builder-options]" 1>&2
+    echo "Usage:\t$0 [-b | -s KEY_ID | -v] [-O linux|win|osx] VERSION [builder-options]" 1>&2
     echo "\t$0 KEY_ID VERSION [builder-options]" 1>&2
     echo "-b\tbuild" 1>&2
     echo "-s\tsign" 1>&2

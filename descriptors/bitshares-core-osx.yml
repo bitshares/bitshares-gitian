@@ -1,0 +1,182 @@
+---
+name: bitshares-core-osx
+enable_cache: true
+distro: ubuntu
+suites:
+- bionic
+architectures:
+- amd64
+packages:
+- clang
+- git
+- cmake
+- ccache
+- autoconf
+- libtool
+- automake
+- doxygen
+- libssl-dev
+- libxml2-dev
+remotes:
+- url: https://github.com/bitshares/bitshares-core.git
+  dir: bitshares
+files:
+- supplement.tar.gz
+- zlib-1.2.11.tar.gz
+- openssl-1.1.1c.tar.gz
+- curl-7.65.0.tar.bz2
+- boost_1_69_0.tar.bz2
+- MacOSX10.15.sdk.tar.xz
+- e0a171828a72a0d7ad4409489033536590008ebf.tar.gz
+script: |
+  set -e -o pipefail
+
+  if test -n "$GBUILD_CACHE_ENABLED"; then
+    export CCACHE_DIR="${GBUILD_PACKAGE_CACHE}/ccache"
+    export CCACHE_COMPRESS=true
+    mkdir -p "${CCACHE_DIR}"
+    pushd "${GBUILD_PACKAGE_CACHE}"
+    if [ -r ccache.tar ]; then
+        tar xf ccache.tar
+    fi
+    popd
+    ccache -s
+  else
+    export CCACHE_DISABLE=true
+  fi
+
+  mkdir lib
+  LIBS="`pwd`/lib"
+
+  # Build osxcross
+  tar xfz e0a171828a72a0d7ad4409489033536590008ebf.tar.gz
+  pushd osxcross-*
+  mv ../MacOSX*.sdk.tar.?z tarballs/
+  GIT_SSL_NO_VERIFY=true UNATTENDED=1 ./build.sh
+  OSXCROSS_TARGET="`pwd`/target"
+  export PATH="$PATH:$OSXCROSS_TARGET/bin"
+  DARWIN="$(echo target/bin/x86_64-*clang++ | cut -d/ -f 3 | cut -d- -f 1-3 )-"
+  popd
+
+  # Build zlib
+  ZLIB="`echo zlib-*`"
+  tar xfz "$ZLIB"
+  pushd "${ZLIB%.tar.gz}"
+  CC="ccache ${DARWIN}clang" CROSS_PREFIX="$DARWIN" ./configure --prefix="$LIBS" --static --64
+  make install
+  popd
+
+  # Build openssl
+  OPENSSL="`echo openssl-*`"
+  tar xfz "$OPENSSL"
+  pushd "${OPENSSL%.tar.gz}"
+  ./Configure --prefix="$LIBS" --cross-compile-prefix="$DARWIN" \
+              no-shared zlib threads \
+              darwin64-x86_64-cc
+  make $MAKEOPTS CPPFLAGS="-I$LIBS/include" LDFLAGS="-L$LIBS/lib" build_libs
+  make $MAKEOPTS install_dev
+  popd
+
+  # Build curl
+  CURL="`echo curl-*`"
+  tar xfj "$CURL"
+  pushd "${CURL%.tar.bz2}"
+  CC="ccache ${DARWIN}clang" \
+  PKG_CONFIG_PATH="$LIBS/lib/pkgconfig" ./configure --host="${DARWIN%-}" \
+                                                    --prefix="$LIBS" \
+                                                    --disable-shared \
+                                                    --disable-tftpf \
+                                                    --disable-ldap \
+                                                    --with-zlib="$LIBS" \
+                                                    --with-ssl="$LIBS" \
+                                                    --disable-tftp \
+                                                    --disable-ldap
+  make -C lib install
+  make -C include install
+  popd
+
+  # Build boost
+  BOOST="`echo boost_*`"
+  tar xfj "$BOOST"
+  pushd "${BOOST%.tar.bz2}"
+  # See https://github.com/boostorg/context/issues/101
+  sed -i '/os.\(name\|platform\)/d;/local tmp = /s=elf=pe=;/local tmp = /s=sysv=ms=' libs/context/build/Jamfile.v2
+  echo "using clang : osxcross : ccache ${DARWIN}clang++ : <archiver>${DARWIN}ar <ranlib>${DARWIN}ranlib ;" > user-config.jam
+  ./bootstrap.sh --prefix=$LIBS --with-toolset=darwin
+  ./b2 --user-config=user-config.jam \
+       target-os=darwin \
+       variant=release \
+       link=static \
+       threading=multi \
+       runtime-link=static \
+       address-model=64 \
+       abi=sysv \
+       binary-format=mach-o \
+       $MAKEOPTS \
+       install
+  popd
+
+  cd bitshares
+  sed -i '/__DATE__/d' libraries/wallet/wallet.cpp
+  sed -i '/hardfork.hpp/d' libraries/chain/CMakeLists.txt
+  sed -i "/[ep].configure/s/$/ --host=${DARWIN%-} CC=${DARWIN}clang LD=${DARWIN}clang/" libraries/fc/CMakeLists.txt
+  sed -i '1ilist( APPEND PLATFORM_SPECIFIC_LIBS -Wl,-undefined -Wl,dynamic_lookup)' programs/witness_node/CMakeLists.txt
+  sed -i '1iadd_compile_options( -fvisibility=hidden )' CMakeLists.txt
+
+  mkdir -p build
+  cd build
+  touch "$LIBS/include/boost/context/all.hpp" # hack for cmake older than boost
+  cmake -D CMAKE_BUILD_TYPE=Release \
+        -D CMAKE_C_COMPILER="${DARWIN}clang" \
+        -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
+        -D CMAKE_CXX_COMPILER="${DARWIN}clang++" \
+        -D CMAKE_AR="$OSXCROSS_TARGET/bin/${DARWIN}ar" \
+        -D CMAKE_SYSTEM_NAME=Darwin \
+        -D CURL_STATICLIB=ON \
+        -D CMAKE_FIND_ROOT_PATH="$OSXCROSS_TARGET;$LIBS" \
+        -D CMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
+        -D CMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
+        -D CMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
+        -D CMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY \
+        ..
+  rm "$LIBS/include/boost/context/all.hpp" # hack for cmake older than boost
+  mkdir -p libraries/chain/include/graphene/chain/
+  cat ../libraries/chain/hardfork.d/* >libraries/chain/include/graphene/chain/hardfork.hpp
+  make $MAKEOPTS embed_genesis
+  cp /bin/true libraries/egenesis/embed_genesis
+  CHAIN_ID="`sha256sum ../libraries/egenesis/genesis.json |cut -d\  -f 1`"
+  sed "/generated_file_banner/d;s=\${.*}=$CHAIN_ID=" < ../libraries/egenesis/egenesis_brief.cpp.tmpl \
+                                                     > libraries/egenesis/egenesis_brief.cpp
+  ( sed "/generated_file_banner/d;s=\${.*}=$CHAIN_ID=" < ../libraries/egenesis/egenesis_brief.cpp.tmpl \
+        | head -38
+    echo -n 'result = "'
+    sed 's=["\\]=\\\0=g' <../libraries/egenesis/genesis.json
+    echo '";'
+    sed "/generated_file_banner/d;s=\${.*}=$CHAIN_ID=" < ../libraries/egenesis/egenesis_brief.cpp.tmpl \
+        | tail -n +40
+  ) >libraries/egenesis/egenesis_full.cpp
+  make $MAKEOPTS witness_node cli_wallet
+
+  rm -rf DIST
+  mkdir -p DIST
+  ARTIFACTS="programs/witness_node/witness_node programs/cli_wallet/cli_wallet"
+  ${DARWIN}strip $ARTIFACTS
+  mv $ARTIFACTS DIST
+  tar xfz ../../supplement.tar.gz
+  mv supplement/README-core.md DIST/README.md
+  mv supplement/licenses DIST/licenses
+  mv supplement/LICENSE-core-osx.txt DIST/LICENSE.txt
+  cp ../libraries/fc/vendor/websocketpp/COPYING DIST/licenses/WebsocketPP.txt
+  TIMESTAMP="$(grep define.*TIMESTAMP libraries/utilities/git_revision.cpp | cut -d\  -f 3)"
+  find DIST | xargs touch --date $(date -u --date="@$TIMESTAMP" +%Y-%m-%dT%H:%M:%SZ)
+  tar cfj "${OUTDIR}/bitshares-core-`git describe --tags`-macos64-bin.tar.bz2" \
+      --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 \
+      -C DIST .
+
+  if test -n "$GBUILD_CACHE_ENABLED"; then
+    # pack ccache into one file to keep the manifest short
+    pushd "${GBUILD_PACKAGE_CACHE}"
+    tar cf ccache.tar ccache
+    rm -rf ccache
+    popd
+  fi

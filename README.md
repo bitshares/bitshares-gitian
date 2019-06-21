@@ -44,6 +44,11 @@ Your user must be able to run and access such virtualized environments. Dependin
 Instructions on how to install required software on some OSes and prepare a gitian base environment can be found [here](https://github.com/devrandom/gitian-builder/blob/master/README.md).
 You should follow the described steps until you have completed the "Sanity-testing" section successfully. Be sure to use the "bionic" suite for your base image.
 
+If you want to build build executables for Mac you'll need to download MacOSX SDK 10.15.
+It is contained in the Xcode 11 distribution, which is available at https://developer.apple.com/ .
+After downloading Xcode, you can extract the SDK as described [here](https://github.com/tpoechtrager/osxcross#packaging-the-sdk).
+The resulting file `MacOSX10.15.sdk.tar.xz` must be put in the `vendor/gitian-builder/inputs` subdirectory.
+
 ### Example for Docker
 
 `dockerd` must be running and the current user must have sufficient privileges to use it.
