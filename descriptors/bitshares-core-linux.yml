@@ -1,5 +1,5 @@
 ---
-name: bithares-core-linux
+name: bitshares-core-linux
 enable_cache: true
 distro: ubuntu
 suites:
