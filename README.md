@@ -117,3 +117,7 @@ cd vendor/gitian-builder/build/out/
 tar xvfj bitshares-3.1.0-linux-amd64-bin.tar.bz2
 ./programs/witness_node
 ```
+
+## Further Reading
+
+See https://reproducible-builds.org/docs/ for a deeper insight into the challenges faced by this task, and for possible explanations why you cannot reproduce a given build.

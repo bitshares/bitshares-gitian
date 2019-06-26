@@ -26,6 +26,11 @@ files:
 script: |
   set -e -o pipefail
 
+  # https://blog.torproject.org/deterministic-builds-part-two-technical-details
+  export LC_ALL=C
+  export TZ=UTC
+  export PERL_HASH_SEED=0
+
   if test -n "$GBUILD_CACHE_ENABLED"; then
     export CCACHE_DIR="${GBUILD_PACKAGE_CACHE}/ccache"
     export CCACHE_COMPRESS=true
@@ -56,24 +61,22 @@ script: |
   make $MAKEOPTS witness_node cli_wallet
 
   rm -rf DIST
-  mkdir -p DIST
+  NAME="bitshares-core-`git describe --tags`-linux-amd64-bin"
+  mkdir -p "DIST/$NAME"
   ARTIFACTS="programs/witness_node/witness_node programs/cli_wallet/cli_wallet"
   strip $ARTIFACTS
-  mv $ARTIFACTS DIST
+  mv $ARTIFACTS "DIST/$NAME"
   tar xfz ../../supplement.tar.gz
-  mv supplement/README-core.md DIST/README.md
-  mv supplement/licenses DIST/licenses
-  rm -f DIST/licenses/LGPL* DIST/licenses/OpenSSL.txt
-  mv supplement/LICENSE-core-linux.txt DIST/LICENSE.txt
-  cp ../libraries/fc/vendor/websocketpp/COPYING DIST/licenses/WebsocketPP.txt
+  mv supplement/README-core.md "DIST/$NAME/README.md"
+  mv supplement/licenses "DIST/$NAME/licenses"
+  rm -f "DIST/$NAME/licenses/LGPL"* "DIST/$NAME/licenses/OpenSSL.txt"
+  mv supplement/LICENSE-core-linux.txt "DIST/$NAME/LICENSE.txt"
+  cp ../libraries/fc/vendor/websocketpp/COPYING "DIST/$NAME/licenses/WebsocketPP.txt"
   TIMESTAMP="$(grep define.*TIMESTAMP libraries/utilities/git_revision.cpp | cut -d\  -f 3)"
   find DIST | xargs touch --date $(date -u --date="@$TIMESTAMP" +%Y-%m-%dT%H:%M:%SZ)
-  tar cfj "${OUTDIR}/bitshares-core-`git describe --tags`-linux-amd64-bin.tar.bz2" \
-      --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 \
+  tar cfj "${OUTDIR}/${NAME}.tar.bz2" \
+      --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 --sort=name \
       -C DIST .
-
-  cd ..
-  mv libraries/wallet/wallet.cpp{.orig,}
 
   if test -n "$GBUILD_CACHE_ENABLED"; then
     # pack ccache into one file to keep the manifest short
