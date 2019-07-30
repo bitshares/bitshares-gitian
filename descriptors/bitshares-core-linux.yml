@@ -16,13 +16,13 @@ packages:
 - automake
 - doxygen
 - libboost1.65-all-dev
-- libcurl4-openssl-dev
 - libssl-dev
 remotes:
 - url: https://github.com/bitshares/bitshares-core.git
   dir: bitshares
 files:
 - supplement.tar.gz
+- curl-7.65.3.tar.bz2
 script: |
   set -e -o pipefail
 
@@ -44,7 +44,25 @@ script: |
   else
     export CCACHE_DISABLE=true
   fi
+
+  mkdir lib
+  LIBS="`pwd`/lib"
   
+  # Build curl
+  CURL="`echo curl-*`"
+  tar xfj "$CURL"
+  pushd "${CURL%.tar.bz2}"
+  PKG_CONFIG_PATH="$LIBS/lib/pkgconfig" ./configure --prefix="$LIBS" \
+                                                    --disable-shared \
+                                                    --disable-tftpf \
+                                                    --disable-ldap \
+                                                    --with-zlib \
+                                                    --with-ssl \
+                                                    --disable-tftp \
+                                                    --disable-ldap
+  make $MAKEOPTS install
+  popd
+
   cd bitshares
   cp libraries/wallet/wallet.cpp{,.orig}
   sed -i '/__DATE__/d' libraries/wallet/wallet.cpp
@@ -58,6 +76,7 @@ script: |
         -D CMAKE_C_COMPILER_LAUNCHER=ccache \
         -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
         -D CURL_STATICLIB=true \
+        -D CMAKE_FIND_ROOT_PATH="$LIBS" \
         ..
   make $MAKEOPTS witness_node cli_wallet
 
