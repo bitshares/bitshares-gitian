@@ -57,6 +57,7 @@ script: |
   cmake -D CMAKE_BUILD_TYPE=Release \
         -D CMAKE_C_COMPILER_LAUNCHER=ccache \
         -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
+        -D CURL_STATICLIB=true \
         ..
   make $MAKEOPTS witness_node cli_wallet
 
