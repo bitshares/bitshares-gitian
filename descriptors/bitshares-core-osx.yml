@@ -143,7 +143,6 @@ script: |
         -D CMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
         -D CMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
         -D CMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
-        -D CMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY \
         ..
   rm "$LIBS/include/boost/context/all.hpp" # hack for cmake older than boost
   mkdir -p libraries/chain/include/graphene/chain/
