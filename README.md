@@ -37,9 +37,9 @@ This repository contains the following components:
 
 First of all, you need some form of virtualization support on your system. Currently supported by gitian are Docker, KVM, LXC and VirtualBox.
 
-You must have GnuPG installed and on your path as `gpg`.
-
 Your user must be able to run and access such virtualized environments. Depending on your base system it may be sufficient to add your user to a certain group. As a fallback you may be able to use `sudo`.
+
+You must have GnuPG installed and on your path as `gpg`.
 
 Instructions on how to install required software on some OSes and prepare a gitian base environment can be found [here](https://github.com/devrandom/gitian-builder/blob/master/README.md).
 You should follow the described steps until you have completed the "Sanity-testing" section successfully. Be sure to use the "bionic" suite for your base image.
@@ -115,8 +115,20 @@ Example: use built witness_node binary:
 ```
 cd vendor/gitian-builder/build/out/
 tar xvfj bitshares-3.1.0-linux-amd64-bin.tar.bz2
-./programs/witness_node
+./bitshares-core-3.1.0-linux-amd64-bin/witness_node
 ```
+
+## Repository branches
+
+From time to time it may become necessary to update the build descriptors, e. g. to update dependencies, or for other improvements.
+Such changes are likely to lead to different build results, which would invalidate existing signatures.
+Also, if a new version of bitshares-core makes such changes necessary, the change might break the build for older versions.
+
+The plan for such breaking changes is:
+
+* create a branch from master, named after the latest supported core version, immediately before the breaking commit
+* future signatures for these supported versions can be added on that branch only
+* immediately after the breaking commit, remove all signatures for no-longer supported versions from master
 
 ## Further Reading
 
