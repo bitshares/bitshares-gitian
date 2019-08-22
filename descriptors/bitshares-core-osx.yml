@@ -157,7 +157,9 @@ script: |
   ( sed "/generated_file_banner/d;s=\${.*}=$CHAIN_ID=" < ../libraries/egenesis/egenesis_brief.cpp.tmpl \
         | head -38
     echo -n 'result = "'
-    sed 's=["\\]=\\\0=g' <../libraries/egenesis/genesis.json
+    sed 's=["\\]=\\\0=g' <../libraries/egenesis/genesis.json \
+      | tr '\n' '|' \
+      | sed 's=|=\\n=g'
     echo '";'
     sed "/generated_file_banner/d;s=\${.*}=$CHAIN_ID=" < ../libraries/egenesis/egenesis_brief.cpp.tmpl \
         | tail -n +40
