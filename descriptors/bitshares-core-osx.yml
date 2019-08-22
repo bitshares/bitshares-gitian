@@ -86,6 +86,7 @@ script: |
   CURL="`echo curl-*`"
   tar xfj "$CURL"
   pushd "${CURL%.tar.bz2}"
+  export CFLAGS=-mmacosx-version-min=10.13
   CC="ccache ${DARWIN}clang" \
   PKG_CONFIG_PATH="$LIBS/lib/pkgconfig" ./configure --host="${DARWIN%-}" \
                                                     --prefix="$LIBS" \
@@ -98,6 +99,7 @@ script: |
                                                     --disable-ldap
   make -C lib install
   make -C include install
+  unset CFLAGS
   popd
 
   # Build boost
