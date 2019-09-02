@@ -1,0 +1,183 @@
+---
+name: bitshares-core-win
+enable_cache: true
+distro: ubuntu
+suites:
+- bionic
+architectures:
+- amd64
+packages:
+- g++-mingw-w64-x86-64
+- mingw-w64-tools
+- git
+- cmake
+- ccache
+- autoconf
+- libtool
+- automake
+- doxygen
+- zip
+remotes:
+- url: https://github.com/bitshares/bitshares-core.git
+  dir: bitshares
+files:
+- supplement.tar.gz
+- zlib-1.2.11.tar.gz
+- openssl-1.1.1c.tar.gz
+- curl-7.65.0.tar.bz2
+- boost_1_69_0.tar.bz2
+script: |
+  set -e -o pipefail
+
+  # https://blog.torproject.org/deterministic-builds-part-two-technical-details
+  export LC_ALL=C
+  export TZ=UTC
+  export PERL_HASH_SEED=0
+
+  if test -n "$GBUILD_CACHE_ENABLED"; then
+    export CCACHE_DIR="${GBUILD_PACKAGE_CACHE}/ccache"
+    export CCACHE_COMPRESS=true
+    mkdir -p "${CCACHE_DIR}"
+    pushd "${GBUILD_PACKAGE_CACHE}"
+    if [ -r ccache.tar ]; then
+        tar xf ccache.tar
+    fi
+    popd
+    ccache -s
+    mkdir -p "$HOME/bin"
+    for i in /usr/bin/x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-g++; do
+        echo '#!/bin/sh' >"$HOME/bin/${i##*/}"
+        echo "exec ccache '$i-posix' \"\$@\"" >>"$HOME/bin/${i##*/}"
+        chmod 755 "$HOME/bin/${i##*/}"
+    done
+    export PATH="$HOME/bin:$PATH"
+  else
+    export CCACHE_DISABLE=true
+  fi
+
+  mkdir lib
+  LIBS="`pwd`/lib"
+
+  # Build zlib
+  ZLIB="`echo zlib-*`"
+  tar xfz "$ZLIB"
+  pushd "${ZLIB%.tar.gz}"
+  CROSS_PREFIX=x86_64-w64-mingw32- ./configure --prefix="$LIBS" --static --64
+  make install
+  popd
+
+  # Build openssl
+  OPENSSL="`echo openssl-*`"
+  tar xfz "$OPENSSL"
+  pushd "${OPENSSL%.tar.gz}"
+  ./Configure --prefix="$LIBS" --cross-compile-prefix=x86_64-w64-mingw32- \
+              no-shared zlib threads \
+              mingw64
+  make $MAKEOPTS CPPFLAGS="-I$LIBS/include" LDFLAGS="-L$LIBS/lib" build_libs
+  make $MAKEOPTS install_dev
+  popd
+
+  # Build curl
+  CURL="`echo curl-*`"
+  tar xfj "$CURL"
+  pushd "${CURL%.tar.bz2}"
+  sed -i 's=-lgdi32=-lcrypt32 \0='  configure
+  PKG_CONFIG_PATH="$LIBS/lib/pkgconfig" ./configure --host=x86_64-w64-mingw32 \
+                                                    --prefix="$LIBS" \
+                                                    --disable-shared \
+                                                    --disable-tftpf \
+                                                    --disable-ldap \
+                                                    --with-zlib \
+                                                    --without-ssl --with-winssl \
+                                                    --disable-tftp \
+                                                    --disable-ldap
+  make $MAKEOPTS install
+  popd
+
+  # Build boost
+  BOOST="`echo boost_*`"
+  tar xfj "$BOOST"
+  pushd "${BOOST%.tar.bz2}"
+  # See https://github.com/boostorg/context/issues/101
+  sed -i '/os.\(name\|platform\)/d;/local tmp = /s=elf=pe=;/local tmp = /s=sysv=ms=' libs/context/build/Jamfile.v2
+  ./bootstrap.sh --prefix=$LIBS
+  echo "using gcc : mingw32 : x86_64-w64-mingw32-g++ ;" > user-config.jam
+  ./b2 --user-config=user-config.jam \
+       toolset=gcc-mingw32 \
+       target-os=windows \
+       variant=release \
+       link=static \
+       threading=multi \
+       runtime-link=static \
+       address-model=64 \
+       abi=ms \
+       $MAKEOPTS \
+       install
+  popd
+
+  cd bitshares
+  sed -i '/__DATE__/d' libraries/wallet/wallet.cpp
+  sed -i '/hardfork.hpp/d' libraries/chain/CMakeLists.txt
+  sed -i "/add_executable/alist( APPEND PLATFORM_SPECIFIC_LIBS $LIBS/lib/libcurl.a -lws2_32 -lpthread -lcrypt32 )" \
+      programs/witness_node/CMakeLists.txt
+
+  mkdir -p build
+  cd build
+  touch "$LIBS/include/boost/context/all.hpp" # hack for cmake older than boost
+  cmake -D CMAKE_BUILD_TYPE=Release \
+        -D CMAKE_C_COMPILER=/usr/bin/x86_64-w64-mingw32-gcc-posix \
+        -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
+        -D CMAKE_CXX_COMPILER=/usr/bin/x86_64-w64-mingw32-g++-posix \
+        -D CMAKE_SYSTEM_NAME=Windows \
+        -D CURL_STATICLIB=ON \
+        -D CMAKE_EXE_LINKER_FLAGS=--static \
+        -D CMAKE_FIND_ROOT_PATH="/usr/lib/gcc/x86_64-w64-mingw32/7.3-win32/;$LIBS" \
+        -D CMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
+        -D CMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
+        -D CMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
+        -D OPENSSL_CONF_SOURCE=$HOME/build/${OPENSSL%.tar.gz}/apps/openssl.cnf \
+        ..
+  rm "$LIBS/include/boost/context/all.hpp" # hack for cmake older than boost
+  mkdir -p libraries/chain/include/graphene/chain/
+  cat ../libraries/chain/hardfork.d/* >libraries/chain/include/graphene/chain/hardfork.hpp
+  make $MAKEOPTS embed_genesis
+  ln -sf /bin/true libraries/egenesis/embed_genesis
+  CHAIN_ID="`sha256sum ../libraries/egenesis/genesis.json |cut -d\  -f 1`"
+  sed "/generated_file_banner/d;s=\${.*}=$CHAIN_ID=" < ../libraries/egenesis/egenesis_brief.cpp.tmpl \
+                                                     > libraries/egenesis/egenesis_brief.cpp
+  ( sed "/generated_file_banner/d;s=\${.*}=$CHAIN_ID=" < ../libraries/egenesis/egenesis_brief.cpp.tmpl \
+        | head -38
+    echo -n 'result = "'
+    sed 's=["\\]=\\\0=g' <../libraries/egenesis/genesis.json \
+      | tr '\n' '|' \
+      | sed 's=|=\\n=g'
+    echo '";'
+    sed "/generated_file_banner/d;s=\${.*}=$CHAIN_ID=" < ../libraries/egenesis/egenesis_brief.cpp.tmpl \
+        | tail -n +40
+  ) >libraries/egenesis/egenesis_full.cpp
+  make $MAKEOPTS witness_node cli_wallet
+
+  rm -rf DIST
+  NAME="bitshares-core-`git describe --tags`-win64-bin"
+  mkdir -p "DIST/$NAME"
+  ARTIFACTS="programs/witness_node/witness_node.exe programs/cli_wallet/cli_wallet.exe"
+  strip $ARTIFACTS
+  mv $ARTIFACTS "DIST/$NAME"
+  tar xfz ../../supplement.tar.gz
+  mv supplement/README-core.md "DIST/$NAME/README.md"
+  mv supplement/licenses "DIST/$NAME/licenses"
+  mv supplement/LICENSE-core-win.txt "DIST/$NAME/LICENSE.txt"
+  cp ../libraries/fc/vendor/websocketpp/COPYING "DIST/$NAME/licenses/WebsocketPP.txt"
+  TIMESTAMP="$(grep define.*TIMESTAMP libraries/utilities/git_revision.cpp | cut -d\  -f 3)"
+  find DIST | xargs touch --date $(date -u --date="@$TIMESTAMP" +%Y-%m-%dT%H:%M:%SZ)
+  cd DIST
+  zip -9 "${OUTDIR}/${NAME}.zip" `find "$NAME" | sort`
+  cd ..
+
+  if test -n "$GBUILD_CACHE_ENABLED"; then
+    # pack ccache into one file to keep the manifest short
+    pushd "${GBUILD_PACKAGE_CACHE}"
+    tar cf ccache.tar ccache
+    rm -rf ccache
+    popd
+  fi
