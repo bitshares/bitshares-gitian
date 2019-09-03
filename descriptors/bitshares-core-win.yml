@@ -120,6 +120,7 @@ script: |
   sed -i '/hardfork.hpp/d' libraries/chain/CMakeLists.txt
   sed -i "/add_executable/alist( APPEND PLATFORM_SPECIFIC_LIBS $LIBS/lib/libcurl.a -lws2_32 -lpthread -lcrypt32 )" \
       programs/witness_node/CMakeLists.txt
+  sed -i '/fPIC/aadd_linker_flag( "--no-insert-timestamp" )' CMakeLists.txt
 
   mkdir -p build
   cd build
@@ -171,7 +172,7 @@ script: |
   TIMESTAMP="$(grep define.*TIMESTAMP libraries/utilities/git_revision.cpp | cut -d\  -f 3)"
   find DIST | xargs touch --date $(date -u --date="@$TIMESTAMP" +%Y-%m-%dT%H:%M:%SZ)
   cd DIST
-  zip -9 "${OUTDIR}/${NAME}.zip" `find "$NAME" | sort`
+  zip -X -9 "${OUTDIR}/${NAME}.zip" `find "$NAME" | sort`
   cd ..
 
   if test -n "$GBUILD_CACHE_ENABLED"; then
