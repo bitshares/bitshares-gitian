@@ -78,6 +78,7 @@ script: |
   ./Configure --prefix="$LIBS" --cross-compile-prefix="$DARWIN" \
               no-shared zlib threads \
               darwin64-x86_64-cc
+  SOURCE_DATE_EPOCH=1 \
   make $MAKEOPTS CPPFLAGS="-I$LIBS/include" LDFLAGS="-L$LIBS/lib" build_libs
   make $MAKEOPTS install_dev
   popd
