@@ -16,13 +16,14 @@ packages:
 - automake
 - doxygen
 - libboost1.65-all-dev
-- libssl-dev
+- openssl
 remotes:
 - url: https://github.com/bitshares/bitshares-core.git
   dir: bitshares
 files:
 - supplement.tar.gz
 - curl-7.65.3.tar.bz2
+- openssl-1.1.1c.tar.gz
 script: |
   set -e -o pipefail
 
@@ -48,18 +49,31 @@ script: |
   mkdir lib
   LIBS="`pwd`/lib"
   
+  # Build openssl
+  OPENSSL="`echo openssl-*`"
+  tar xfz "$OPENSSL"
+  pushd "${OPENSSL%.tar.gz}"
+  ./Configure --prefix="$LIBS" --openssldir="$( openssl version -d | cut -d\" -f 2 )" \
+              no-shared zlib threads linux-x86_64
+  SOURCE_DATE_EPOCH=1 \
+    make $MAKEOPTS build_libs
+  make $MAKEOPTS install_dev
+  popd
+
   # Build curl
   CURL="`echo curl-*`"
   tar xfj "$CURL"
   pushd "${CURL%.tar.bz2}"
-  PKG_CONFIG_PATH="$LIBS/lib/pkgconfig" ./configure --prefix="$LIBS" \
-                                                    --disable-shared \
-                                                    --disable-tftpf \
-                                                    --disable-ldap \
-                                                    --with-zlib \
-                                                    --with-ssl \
-                                                    --disable-tftp \
-                                                    --disable-ldap
+  PKG_CONFIG_PATH="$LIBS/lib/pkgconfig" \
+    LIBS="-lz -ldl -lpthread" \
+    ./configure --prefix="$LIBS" \
+                --disable-shared \
+                --disable-tftpf \
+                --disable-ldap \
+                --with-zlib \
+                --with-ssl \
+                --disable-tftp \
+                --disable-ldap
   make $MAKEOPTS install
   popd
 
@@ -69,6 +83,10 @@ script: |
   # Workaround for #1791
   sed -i '/target_link_lib/s=..Boost_LIBRARIES.==;/target_link_lib/s=ZLIB_LIBRARIES.=\0 ${Boost_LIBRARIES}=' \
       libraries/fc/CMakeLists.txt
+  # Allow static openssl, see #1980
+  sed -i -e '/set..OLD_SUFF/ifind_package(OpenSSL REQUIRED)' \
+      -e 's=ssl crypto=${OPENSSL_LIBRARIES} ${BOOST_THREAD_LIBRARY} ${CMAKE_DL_LIBS}=' \
+      CMakeLists.txt
 
   mkdir build
   cd build
@@ -76,6 +94,8 @@ script: |
         -D CMAKE_C_COMPILER_LAUNCHER=ccache \
         -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
         -D CURL_STATICLIB=true \
+        -D OPENSSL_USE_STATIC_LIBS=true \
+        -D OPENSSL_ROOT_DIR="$LIBS" \
         -D CMAKE_FIND_ROOT_PATH="$LIBS" \
         ..
   make $MAKEOPTS witness_node cli_wallet
