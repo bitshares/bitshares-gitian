@@ -76,6 +76,7 @@ script: |
   tar xfz "$OPENSSL"
   pushd "${OPENSSL%.tar.gz}"
   ./Configure --prefix="$LIBS" --cross-compile-prefix="$DARWIN" \
+              --openssldir="/private/etc/ssl" \
               no-shared zlib threads \
               darwin64-x86_64-cc
   SOURCE_DATE_EPOCH=1 \

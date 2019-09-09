@@ -1,11 +1,12 @@
 --- !!omap
-- out_manifest: '70e0c06edeccd83567d22dc07a6d29b5750f3a6e56a5aa02937a4a4ad292e20a  bitshares-core-3.3.1-linux-amd64-bin.tar.bz2
+- out_manifest: '30d4b8ddbfea143904d099b78e2083a666b6c0d7e68fb1810fbbdfb841f971af  bitshares-core-3.3.1-linux-amd64-bin.tar.bz2
 
 '
 - in_manifest: |-
-    2a5be0f77011fd120493c76ec408714a8c2bd887ece88e5203f05bf0217cee1f  bitshares-core-linux-desc.yml
-    e5920ae988478e21477f362dc75308c1c7976bc2d34a8d1f4a0ac4914a3e6d8d  supplement.tar.gz
+    d1abd21bc8423dbd5821d2107a5c194d415b12f669fb4164df6695bced6c182b  bitshares-core-linux-desc.yml
+    771e54fe56e36cea9e288dac11c012f4f46f8ca4b99fe72f30e78785d8074145  supplement.tar.gz
     0a855e83be482d7bc9ea00e05bdb1551a44966076762f9650959179c89fce509  curl-7.65.3.tar.bz2
+    f6fb3079ad15076154eda9413fed42877d668e7069d9b87396d0804fdb3f4c90  openssl-1.1.1c.tar.gz
     git:ca8e352686b36c21a442a1dbfeba67d639b90488 bitshares
 - base_manifests: !!omap
   - bionic-amd64: |
@@ -307,7 +308,6 @@
       ba1aac6e4476eda0c69fefc0df4ff7a3925bd7409cd42f5f1addf82e814e9730  libsmartcols1_2.31.1-0.4ubuntu3.4_amd64.deb
       199fbe096ee359eaf16e7e23871a1aa508bf055df0010c7c4321398f9484a220  libsqlite3-0_3.22.0-1ubuntu0.1_amd64.deb
       4babf98e5989fa6dacc8a78981996c471cab6f7b98caf4c1ebdef3eba3c7767f  libss2_1.44.1-1ubuntu1.1_amd64.deb
-      66b83f4b806196795cdef8c8c1ba049ea79bd010c7c7a7b42d045c71c1ef30d4  libssl-dev_1.1.1-1ubuntu2.1~18.04.4_amd64.deb
       79672b6343582b2c0fc8bbe6cfdd7bde0aab7be22d846d496f49aeac11a71441  libssl1.0.0_1.0.2n-1ubuntu5.3_amd64.deb
       92887a27422e5bbc33f91e529f0cc071ee1bece0220ba94fe311e8f9280b2607  libssl1.1_1.1.1-1ubuntu2.1~18.04.4_amd64.deb
       5d1a1ce1bf23a0a7a61f4f5d32172505a37f62063994ed91940757e2c92b5a68  libstdc++-7-dev_7.4.0-1ubuntu1~18.04.1_amd64.deb
@@ -358,6 +358,7 @@
       c076a0915958fcdede770cf64ac53fa899de4f117f028ff07209e1c8220b65bf  openssh-client_1%3a7.6p1-4ubuntu0.3_amd64.deb
       d053c53677ee8ec64e242df4d5f342514553d848afb10067bc50cefcf8888034  openssh-server_1%3a7.6p1-4ubuntu0.3_amd64.deb
       efc1128c6e23a9e7fa90f2918043f46373d3f37ffdf54794c371bcb49a74c8ca  openssh-sftp-server_1%3a7.6p1-4ubuntu0.3_amd64.deb
+      489d6e44ee7144abeb9a1a10677290a85cf373585c27d53c62d11ad8550b8ed5  openssl_1.1.1-1ubuntu2.1~18.04.4_amd64.deb
       27ea80307c4726e680f01e3ce56968c6a1079dd4fbf224feec4a4626e3618f59  passwd_1%3a4.5-1ubuntu2_amd64.deb
       f56fc64546fbbbba26ca1776587bf0c3cad48438bb84c5c423c025ab86d4263e  patch_2.7.6-2ubuntu1.1_amd64.deb
       217ff292f4a0e5b3acfa02eba10c82895175fc19698113453c16a529575d5264  pciutils_1%3a3.5.2-1ubuntu1.1_amd64.deb
@@ -396,7 +397,7 @@
       1bd6bfc66d1de113f14a9afdd61d7f4b911c11c570403dd9785aa937b88f9ea9  zlib1g-dev_1%3a1.2.11.dfsg-0ubuntu2_amd64.deb
       2e6dafb986ee8ebbc4e1c344fab090a41710cab878fc9cd89336cdd1740518c5  zlib1g_1%3a1.2.11.dfsg-0ubuntu2_amd64.deb
 - cache_common_manifest: ''
-- cache_package_manifest: 'd741e5f4da78d9661485daf2ac792730eb3e7c3be360eae6103448cad2d53fa3  ccache.tar
+- cache_package_manifest: '767a2828b21b13a76f40ee0b6f8a54b64e70e22f8fee816ddffa41dd301c0982  ccache.tar
 
 '
 - release: 3.3.1-linux
