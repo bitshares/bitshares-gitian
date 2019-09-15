@@ -26,7 +26,7 @@ files:
 - openssl-1.1.1c.tar.gz
 - curl-7.65.0.tar.bz2
 - boost_1_69_0.tar.bz2
-- MacOSX10.15.sdk.tar.xz
+- MacOSX10.14.sdk.tar.xz
 - e0a171828a72a0d7ad4409489033536590008ebf.tar.gz
 script: |
   set -e -o pipefail
