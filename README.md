@@ -44,10 +44,10 @@ You must have GnuPG installed and on your path as `gpg`.
 Instructions on how to install required software on some OSes and prepare a gitian base environment can be found [here](https://github.com/devrandom/gitian-builder/blob/master/README.md).
 You should follow the described steps until you have completed the "Sanity-testing" section successfully. Be sure to use the "bionic" suite for your base image.
 
-If you want to build build executables for Mac you'll need to download MacOSX SDK 10.15.
-It is contained in the Xcode 11 distribution, which is available at https://developer.apple.com/ .
+If you want to build build executables for Mac you'll need to download MacOSX SDK 10.14.
+It is contained in the Xcode 10.3 distribution, which is available at https://developer.apple.com/xcode/resources/ under "Command Line Tools & Older Versions of Xcode". .
 After downloading Xcode, you can extract the SDK as described [here](https://github.com/tpoechtrager/osxcross#packaging-the-sdk).
-The resulting file `MacOSX10.15.sdk.tar.xz` must be put in the `vendor/gitian-builder/inputs` subdirectory.
+The resulting file `MacOSX10.14.sdk.tar.xz` must be put in the `vendor/gitian-builder/inputs` subdirectory.
 
 ### Example for Docker
 
