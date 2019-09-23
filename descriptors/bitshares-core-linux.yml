@@ -3,7 +3,7 @@ name: bitshares-core-linux
 enable_cache: true
 distro: ubuntu
 suites:
-- bionic
+- xenial
 architectures:
 - amd64
 packages:
@@ -15,15 +15,17 @@ packages:
 - libtool
 - automake
 - doxygen
-- libboost1.65-all-dev
+- libboost1.58-all-dev
+- zlib1g-dev
 - openssl
+- pkgconf
 remotes:
 - url: https://github.com/bitshares/bitshares-core.git
   dir: bitshares
 files:
 - supplement.tar.gz
 - curl-7.65.3.tar.bz2
-- openssl-1.1.1c.tar.gz
+- openssl-1.0.2t.tar.gz
 script: |
   set -e -o pipefail
 
@@ -57,7 +59,7 @@ script: |
               no-shared zlib threads linux-x86_64
   SOURCE_DATE_EPOCH=1 \
     make $MAKEOPTS build_libs
-  make $MAKEOPTS install_dev
+  make $MAKEOPTS install_sw DIRS="crypto ssl"
   popd
 
   # Build curl

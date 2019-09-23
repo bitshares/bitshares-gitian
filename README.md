@@ -61,10 +61,13 @@ cd bitshares-gitian
 git submodule update --init --recursive
 ```
 
-#### Create base VM
+#### Create base VMs
+
+Note: for better binary compatibility we build Linux binaries on Ubuntu Xenial (16.04), for Mac and Windows builds we use the newer Ubuntu Bionic (18.04).
 
 ```
 vendor/gitian-builder/bin/make-base-vm --docker --suite bionic
+vendor/gitian-builder/bin/make-base-vm --docker --suite xenial
 ```
 
 #### Sanity-testing
@@ -134,6 +137,10 @@ The plan for such breaking changes is:
 * create a branch from master, named after the latest supported core version, immediately before the breaking commit
 * future signatures for these supported versions can be added on that branch only
 * immediately after the breaking commit, remove all signatures for no-longer supported versions from master
+
+### Existing branches
+
+* [3.3.1](https://github.com/bitshares/bitshares-gitian/tree/3.3.1)
 
 ## Further Reading
 
