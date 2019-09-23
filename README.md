@@ -138,6 +138,10 @@ The plan for such breaking changes is:
 * future signatures for these supported versions can be added on that branch only
 * immediately after the breaking commit, remove all signatures for no-longer supported versions from master
 
+### Existing branches
+
+* [3.3.1](https://github.com/bitshares/bitshares-gitian/tree/3.3.1)
+
 ## Further Reading
 
 See https://reproducible-builds.org/docs/ for a deeper insight into the challenges faced by this task, and for possible explanations why you cannot reproduce a given build.
