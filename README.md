@@ -61,10 +61,13 @@ cd bitshares-gitian
 git submodule update --init --recursive
 ```
 
-#### Create base VM
+#### Create base VMs
+
+Note: for better binary compatibility we build Linux binaries on Ubuntu Xenial (16.04), for Mac and Windows builds we use the newer Ubuntu Bionic (18.04).
 
 ```
 vendor/gitian-builder/bin/make-base-vm --docker --suite bionic
+vendor/gitian-builder/bin/make-base-vm --docker --suite xenial
 ```
 
 #### Sanity-testing
