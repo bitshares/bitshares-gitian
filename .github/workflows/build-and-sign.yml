@@ -40,7 +40,7 @@ jobs:
         fi
   linux:
     name: Build and sign linux binaries
-    needs: prepare
+    needs: prepare-bionic
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -73,7 +73,7 @@ jobs:
         path: vendor/gitian-builder/build/out
   mac:
     name: Build and sign mac binaries
-    needs: prepare
+    needs: prepare-xenial
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -106,7 +106,7 @@ jobs:
         path: vendor/gitian-builder/build/out
   windows:
     name: Build and sign windows binaries
-    needs: prepare
+    needs: prepare-xenial
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
