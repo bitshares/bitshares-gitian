@@ -32,6 +32,8 @@ jobs:
         key: build-cache-linux
     - name: Build and Sign
       run: |
+        ls -lR
+        which ruby
         export GNUPGHOME=`pwd`/.gpghome
         echo ${{ secrets.PGP_PASSPHRASE }} 1>&3 \
           | ./run-gitian -b -s BitShares-Gitian-Auto-Build-Signer \
