@@ -80,6 +80,7 @@ script: |
   popd
 
   cd bitshares
+  GIT_SSL_NO_VERIFY=true git submodule update --init --recursive
   cp libraries/wallet/wallet.cpp{,.orig}
   sed -i '/__DATE__/d' libraries/wallet/wallet.cpp
   # Workaround for #1791

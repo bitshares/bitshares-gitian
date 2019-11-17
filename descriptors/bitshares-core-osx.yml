@@ -126,6 +126,7 @@ script: |
   popd
 
   cd bitshares
+  GIT_SSL_NO_VERIFY=true git submodule update --init --recursive
   sed -i '/__DATE__/d' libraries/wallet/wallet.cpp
   sed -i '/hardfork.hpp/d' libraries/chain/CMakeLists.txt
   sed -i "/[ep].configure/s/$/ --host=${DARWIN%-} CC=${DARWIN}clang LD=${DARWIN}clang/" libraries/fc/CMakeLists.txt
