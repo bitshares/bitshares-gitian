@@ -70,7 +70,10 @@ jobs:
           | ./run-gitian -b -s BitShares-Gitian-Auto-Build-Signer \
                          -O linux -p "gpg --passphrase-fd 3" \
                          ${{ github.event.deployment.payload.coreversion }} \
-                         -j 1
+                         -j 1 \
+          || ( echo Install log: && cat vendor/gitian-builder/var/install.log \
+               && echo Build log: && cat vendor/gitian-builder/var/build.log \
+               && false )
     - name: Upload build artifacts
       uses: actions/upload-artifact@master
       with:
@@ -111,7 +114,10 @@ jobs:
           | ./run-gitian -b -s BitShares-Gitian-Auto-Build-Signer \
                          -O osx -p "gpg --passphrase-fd 3" \
                          ${{ github.event.deployment.payload.coreversion }} \
-                         -j 1
+                         -j 1 \
+          || ( echo Install log: && cat vendor/gitian-builder/var/install.log \
+               && echo Build log: && cat vendor/gitian-builder/var/build.log \
+               && false )
     - name: Upload build artifacts
       uses: actions/upload-artifact@master
       with:
@@ -147,7 +153,10 @@ jobs:
           | ./run-gitian -b -s BitShares-Gitian-Auto-Build-Signer \
                          -O win -p "gpg --passphrase-fd 3" \
                          ${{ github.event.deployment.payload.coreversion }} \
-                         -j 1
+                         -j 1 \
+          || ( echo Install log: && cat vendor/gitian-builder/var/install.log \
+               && echo Build log: && cat vendor/gitian-builder/var/build.log \
+               && false )
     - name: Upload build artifacts
       uses: actions/upload-artifact@master
       with:
