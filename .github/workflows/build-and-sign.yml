@@ -42,7 +42,7 @@ jobs:
         fi
   linux:
     name: Build and sign linux binaries
-    needs: prepare-bionic
+    needs: prepare-xenial
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -57,11 +57,11 @@ jobs:
       run: |
         if [ ! -r docker/base-xenial-amd64.tar.xz ]; then
             echo "Argh - caching only works for push and pull events. See https://github.com/actions/cache/issues/63"
-            vendor/gitian-builder/bin/make-base-vm --docker --suite bionic
+            vendor/gitian-builder/bin/make-base-vm --docker --suite xenial
         fi
     - name: Build and Sign
       run: |
-        #docker load -i docker/base-bionic-amd64.tar.xz
+        #docker load -i docker/base-xenial-amd64.tar.xz
         sudo apt-get install ruby
         export GNUPGHOME=`pwd`/.gpghome
         echo ${{ secrets.PGP_PASSPHRASE }} 1>&3 \
@@ -76,7 +76,7 @@ jobs:
         path: vendor/gitian-builder/build/out
   mac:
     name: Build and sign mac binaries
-    needs: prepare-xenial
+    needs: prepare-bionic
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -86,7 +86,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: docker
-        key: prep-cache-xenial
+        key: prep-cache-bionic
     - name: Load Build Cache
       uses: actions/cache@v1
       with:
@@ -94,13 +94,13 @@ jobs:
         key: build-cache-osx
     - name: Prepare
       run: |
-        if [ ! -r docker/base-xenial-amd64.tar.xz ]; then
+        if [ ! -r docker/base-bionic-amd64.tar.xz ]; then
             echo "Argh - caching only works for push and pull events. See https://github.com/actions/cache/issues/63"
-            vendor/gitian-builder/bin/make-base-vm --docker --suite xenial
+            vendor/gitian-builder/bin/make-base-vm --docker --suite bionic
         fi
     - name: Build and Sign
       run: |
-        #docker load -i docker/base-xenial-amd64.tar.xz
+        #docker load -i docker/base-bionic-amd64.tar.xz
         sudo apt-get install ruby
         export GNUPGHOME=`pwd`/.gpghome
         echo ${{ secrets.PGP_PASSPHRASE }} 1>&3 \
@@ -115,7 +115,7 @@ jobs:
         path: vendor/gitian-builder/build/out
   windows:
     name: Build and sign windows binaries
-    needs: prepare-xenial
+    needs: prepare-bionic
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -128,13 +128,13 @@ jobs:
         key: build-cache-win
     - name: Prepare
       run: |
-        if [ ! -r docker/base-xenial-amd64.tar.xz ]; then
+        if [ ! -r docker/base-bionic-amd64.tar.xz ]; then
             echo "Argh - caching only works for push and pull events. See https://github.com/actions/cache/issues/63"
-            vendor/gitian-builder/bin/make-base-vm --docker --suite xenial
+            vendor/gitian-builder/bin/make-base-vm --docker --suite bionic
         fi
     - name: Build and Sign
       run: |
-        #docker load -i docker/base-xenial-amd64.tar.xz
+        #docker load -i docker/base-bionic-amd64.tar.xz
         sudo apt-get install ruby
         export GNUPGHOME=`pwd`/.gpghome
         echo ${{ secrets.PGP_PASSPHRASE }} 1>&3 \
