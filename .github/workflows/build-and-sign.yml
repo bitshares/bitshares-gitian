@@ -32,8 +32,7 @@ jobs:
         key: build-cache-linux
     - name: Build and Sign
       run: |
-        ls -lR
-        which ruby
+        sudo apt-get install ruby
         export GNUPGHOME=`pwd`/.gpghome
         echo ${{ secrets.PGP_PASSPHRASE }} 1>&3 \
           | ./run-gitian -b -s BitShares-Gitian-Auto-Build-Signer \
@@ -58,6 +57,7 @@ jobs:
         key: build-cache-osx
     - name: Build and Sign
       run: |
+        sudo apt-get install ruby
         export GNUPGHOME=`pwd`/.gpghome
         echo ${{ secrets.PGP_PASSPHRASE }} 1>&3 \
           | ./run-gitian -b -s BitShares-Gitian-Auto-Build-Signer \
@@ -82,6 +82,7 @@ jobs:
         key: build-cache-win
     - name: Build and Sign
       run: |
+        sudo apt-get install ruby
         export GNUPGHOME=`pwd`/.gpghome
         echo ${{ secrets.PGP_PASSPHRASE }} 1>&3 \
           | ./run-gitian -b -s BitShares-Gitian-Auto-Build-Signer \
