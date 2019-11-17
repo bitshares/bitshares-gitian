@@ -1,0 +1,109 @@
+on: deployment
+env:
+  USE_DOCKER: 1
+jobs:
+  prepare:
+    name: Prepare Gitian build environment
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: recursive
+    - name: Base VM cache
+      id: base-cache
+      uses: actions/cache@v1
+      with:
+        path: vendor/gitian-builder/var
+        key: base-cache
+    - name: Prepare
+      if: steps.base-cache.outputs.cache-hit != 'true'
+      run: |
+        vendor/gitian-builder/bin/make-base-vm --docker --suite bionic
+        vendor/gitian-builder/bin/make-base-vm --docker --suite xenial
+  linux:
+    name: Build and sign linux binaries
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: recursive
+    - name: Load Base Cache
+      uses: actions/cache@v1
+      with:
+        path: vendor/gitian-builder/var
+        key: base-cache
+    - name: Load Build Cache
+      uses: actions/cache@v1
+      with:
+        path: vendor/gitian-builder/cache/bitshares-core-linux
+    - name: Build and Sign
+      run: |
+        sudo apt-get install ruby
+        export GNUPGHOME=`pwd`/.gpghome
+        echo ${{ secrets.PGP_PASSPHRASE }} 1>&3 \
+          | ./run-gitian -b -s BitShares-Gitian-Auto-Build-Signer \
+                         -p "gpg --passphrase-fd 3" -O linux ${{ github.event.deployment.payload.coreversion }} -j 1
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@master
+      with:
+        name: Linux-Binaries
+        path: vendor/gitian-builder/build/out
+  mac:
+    name: Build and sign mac binaries
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: recursive
+    - name: Load Base Cache
+      uses: actions/cache@v1
+      with:
+        path: vendor/gitian-builder/var
+        key: base-cache
+    - name: Load Build Cache
+      uses: actions/cache@v1
+      with:
+        path: vendor/gitian-builder/cache/bitshares-core-osx
+    - name: Build and Sign
+      run: |
+        sudo apt-get install ruby
+        export GNUPGHOME=`pwd`/.gpghome
+        echo ${{ secrets.PGP_PASSPHRASE }} 1>&3 \
+          | ./run-gitian -b -s BitShares-Gitian-Auto-Build-Signer \
+                         -p "gpg --passphrase-fd 3" -O linux ${{ github.event.deployment.payload.coreversion }} -j 1
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@master
+      with:
+        name: Mac Binaries
+        path: vendor/gitian-builder/build/out
+  windows:
+    name: Build and sign windows binaries
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: recursive
+    - name: Load Base Cache
+      uses: actions/cache@v1
+      with:
+        path: vendor/gitian-builder/var
+        key: base-cache
+    - name: Load Build Cache
+      uses: actions/cache@v1
+      with:
+        path: vendor/gitian-builder/cache/bitshares-core-win
+    - name: Build and Sign
+      run: |
+        sudo apt-get install ruby
+        export GNUPGHOME=`pwd`/.gpghome
+        echo ${{ secrets.PGP_PASSPHRASE }} 1>&3 \
+          | ./run-gitian -b -s BitShares-Gitian-Auto-Build-Signer \
+                         -p "gpg --passphrase-fd 3" -O linux ${{ github.event.deployment.payload.coreversion }} -j 1
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@master
+      with:
+        name: Windows Binaries
+        path: vendor/gitian-builder/build/out
