@@ -36,8 +36,9 @@ jobs:
         export GNUPGHOME=`pwd`/.gpghome
         echo ${{ secrets.PGP_PASSPHRASE }} 1>&3 \
           | ./run-gitian -b -s BitShares-Gitian-Auto-Build-Signer \
-                         -O linux ${{ github.event.coreversion }} \
-                         -j 1 -p "gpg --passphrase-fd 3"
+                         -O linux -p "gpg --passphrase-fd 3" \
+                         ${{ github.event.coreversion }} \
+                         -j 1
     - name: Upload build artifacts
       uses: actions/upload-artifact@master
       with:
@@ -62,8 +63,9 @@ jobs:
         export GNUPGHOME=`pwd`/.gpghome
         echo ${{ secrets.PGP_PASSPHRASE }} 1>&3 \
           | ./run-gitian -b -s BitShares-Gitian-Auto-Build-Signer \
-                         -O osx ${{ github.event.coreversion }} \
-                         -j 1 -p "gpg --passphrase-fd 3"
+                         -O osx -p "gpg --passphrase-fd 3" \
+                         ${{ github.event.coreversion }} \
+                         -j 1
     - name: Upload build artifacts
       uses: actions/upload-artifact@master
       with:
@@ -88,8 +90,9 @@ jobs:
         export GNUPGHOME=`pwd`/.gpghome
         echo ${{ secrets.PGP_PASSPHRASE }} 1>&3 \
           | ./run-gitian -b -s BitShares-Gitian-Auto-Build-Signer \
-                         -O win ${{ github.event.coreversion }} \
-                         -j 1 -p "gpg --passphrase-fd 3"
+                         -O win -p "gpg --passphrase-fd 3" \
+                         ${{ github.event.coreversion }} \
+                         -j 1
     - name: Upload build artifacts
       uses: actions/upload-artifact@master
       with:
