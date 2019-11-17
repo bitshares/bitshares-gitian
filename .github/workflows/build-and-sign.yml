@@ -66,7 +66,7 @@ jobs:
         export GNUPGHOME=`pwd`/.gpghome
         echo ${{ secrets.PGP_PASSPHRASE }} 1>&3 \
           | ./run-gitian -b -s BitShares-Gitian-Auto-Build-Signer \
-                         -O linux -p "gpg --passphrase-fd 3" \
+                         -O linux -p `pwd`/.github/gpg-wrapper \
                          ${{ github.event.coreversion }} \
                          -j 1 \
           || echo Install log: && cat vendor/gitian-builder/var/install.log \
@@ -109,7 +109,7 @@ jobs:
         echo "Skipping Max build due to missing SDK"
         #echo ${{ secrets.PGP_PASSPHRASE }} 1>&3 \
         #  | ./run-gitian -b -s BitShares-Gitian-Auto-Build-Signer \
-        #                 -O osx -p "gpg --passphrase-fd 3" \
+        #                 -O osx -p `pwd`/.github/gpg-wrapper \
         #                 ${{ github.event.coreversion }} \
         #                 -j 1 \
         #  || echo Install log: && cat vendor/gitian-builder/var/install.log \
@@ -146,7 +146,7 @@ jobs:
         export GNUPGHOME=`pwd`/.gpghome
         echo ${{ secrets.PGP_PASSPHRASE }} 1>&3 \
           | ./run-gitian -b -s BitShares-Gitian-Auto-Build-Signer \
-                         -O win -p "gpg --passphrase-fd 3" \
+                         -O win -p `pwd`/.github/gpg-wrapper \
                          ${{ github.event.coreversion }} \
                          -j 1 \
           || echo Install log: && cat vendor/gitian-builder/var/install.log \
