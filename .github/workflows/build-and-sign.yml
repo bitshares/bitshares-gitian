@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
+      with:
+        submodules: recursive
     - name: Base VM cache
       id: base-cache
       uses: actions/cache@v1
@@ -24,6 +26,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
+      with:
+        submodules: recursive
     - name: Load Base Cache
       uses: actions/cache@v1
       with:
@@ -50,6 +54,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
+      with:
+        submodules: recursive
     - name: Load Base Cache
       uses: actions/cache@v1
       with:
@@ -76,6 +82,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
+      with:
+        submodules: recursive
     - name: Load Base Cache
       uses: actions/cache@v1
       with:
