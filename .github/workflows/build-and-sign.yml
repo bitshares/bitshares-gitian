@@ -67,9 +67,9 @@ jobs:
         ./run-gitian -b -O linux \
                      ${{ github.event.deployment.payload.coreversion }} \
                      -j 1 \
-          || echo Install log: && cat vendor/gitian-builder/var/install.log \
-             && echo Build log: && cat vendor/gitian-builder/var/build.log \
-             && false
+          || ( echo Install log: && cat vendor/gitian-builder/var/install.log \
+               && echo Build log: && cat vendor/gitian-builder/var/build.log \
+               && false )
         PGP_PASS="${{ secrets.PGP_PASSPHRASE }}" \
           ./run-gitian -s BitShares-Gitian-Auto-Build-Signer \
                        -O linux -p `pwd`/.github/gpg-wrapper \
@@ -111,9 +111,9 @@ jobs:
         #./run-gitian -b -O osx \
         #             ${{ github.event.deployment.payload.coreversion }} \
         #             -j 1 \
-        #  || echo Install log: && cat vendor/gitian-builder/var/install.log \
-        #     && echo Build log: && cat vendor/gitian-builder/var/build.log \
-        #     && false
+        #  || ( echo Install log: && cat vendor/gitian-builder/var/install.log \
+        #       && echo Build log: && cat vendor/gitian-builder/var/build.log \
+        #       && false )
         export GNUPGHOME=`pwd`/.gpghome
         #PGP_PASS="${{ secrets.PGP_PASSPHRASE }}" \
         #  ./run-gitian -s BitShares-Gitian-Auto-Build-Signer \
@@ -150,9 +150,9 @@ jobs:
         ./run-gitian -b -O win \
                      ${{ github.event.deployment.payload.coreversion }} \
                      -j 1 \
-          || echo Install log: && cat vendor/gitian-builder/var/install.log \
-             && echo Build log: && cat vendor/gitian-builder/var/build.log \
-             && false
+          || ( echo Install log: && cat vendor/gitian-builder/var/install.log \
+               && echo Build log: && cat vendor/gitian-builder/var/build.log \
+               && false )
         export GNUPGHOME=`pwd`/.gpghome
         PGP_PASS="${{ secrets.PGP_PASSPHRASE }}" \
           ./run-gitian -s BitShares-Gitian-Auto-Build-Signer \
