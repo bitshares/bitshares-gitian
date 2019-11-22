@@ -39,17 +39,16 @@ if [ -n "$BUILD" ]; then
     tar cfz inputs/supplement.tar.gz -C ../.. supplement
 
     (
+        echo https://curl.haxx.se/download/curl-7.67.0.tar.bz2 dd5f6956821a548bf4b44f067a530ce9445cc8094fd3e7e3fc7854815858586c
         if [ "$OS" = "win" -o "$OS" = "osx" ]; then
             cat <<_EOL_
-https://www.openssl.org/source/openssl-1.1.1c.tar.gz f6fb3079ad15076154eda9413fed42877d668e7069d9b87396d0804fdb3f4c90
-https://curl.haxx.se/download/curl-7.65.0.tar.bz2 ea47c08f630e88e413c85793476e7e5665647330b6db35f5c19d72b3e339df5c
+https://www.openssl.org/source/openssl-1.1.1d.tar.gz 1e3a91bc1f9dfce01af26026f856e064eab4c8ee0a8f457b5ae30b40b8b711f2
 https://dl.bintray.com/boostorg/release/1.69.0/source/boost_1_69_0.tar.bz2 8f32d4617390d1c2d16f26a27ab60d97807b35440d45891fa340fc2648b04406
 https://zlib.net/zlib-1.2.11.tar.gz c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1
 _EOL_
         else
             # linux
             cat <<_EOL_
-https://curl.haxx.se/download/curl-7.65.3.tar.bz2 0a855e83be482d7bc9ea00e05bdb1551a44966076762f9650959179c89fce509
 https://www.openssl.org/source/openssl-1.0.2t.tar.gz 14cb464efe7ac6b54799b34456bd69558a749a4931ecfd9cf9f71d7881cac7bc
 _EOL_
         fi
