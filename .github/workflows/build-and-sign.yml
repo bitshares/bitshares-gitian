@@ -40,6 +40,25 @@ jobs:
             #vendor/gitian-builder/bin/make-base-vm --docker --suite xenial
             #docker save base-xenial-amd64 | xz >docker/base-xenial-amd64.tar.xz
         fi
+  prepare-mac:
+    name: Scrape mac-SDK
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        repository: tpoechtrager/osxcross
+        ref: e0a171828a72a0d7ad4409489033536590008ebf
+    - name: Package
+      run: |
+        pushd ../osxcross
+        tools/gen_sdk_package.sh
+        popd
+        mv ../osxcross/*MacOSX* .
+    - name: Upload SDK
+      uses: actions/upload-artifact@master
+      with:
+        name: MacOS-SDK
+        path: MacOSX10.15.sdk.tar.xz
   linux:
     name: Build and sign linux binaries
     needs: prepare-xenial
