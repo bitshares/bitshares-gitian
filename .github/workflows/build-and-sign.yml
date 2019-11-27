@@ -23,6 +23,12 @@ jobs:
         echo "Argh - caching only works for push and pull events. See https://github.com/actions/cache/issues/63"
         vendor/gitian-builder/bin/make-base-vm --docker --suite bionic
         docker save base-bionic-amd64 | xz >docker/base-bionic-amd64.tar.xz
+    - name: Upload build artifacts
+      if: steps.cache-bionic.outputs.cache-hit != 'true'
+      uses: actions/upload-artifact@master
+      with:
+        name: docker-bionic
+        path: docker/base-bionic-amd64.tar.xz
   prepare-xenial:
     name: Prepare "xenial" Gitian build environment
     runs-on: ubuntu-latest
@@ -44,6 +50,12 @@ jobs:
         echo "Argh - caching only works for push and pull events. See https://github.com/actions/cache/issues/63"
         vendor/gitian-builder/bin/make-base-vm --docker --suite xenial
         docker save base-xenial-amd64 | xz >docker/base-xenial-amd64.tar.xz
+    - name: Upload build artifacts
+      if: steps.cache-xenial.outputs.cache-hit != 'true'
+      uses: actions/upload-artifact@master
+      with:
+        name: docker-xenial
+        path: docker/base-xenial-amd64.tar.xz
   prepare-mac:
     name: Scrape mac-SDK
     runs-on: macos-latest
@@ -79,20 +91,21 @@ jobs:
     needs: prepare-xenial
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: recursive
     - name: Load Prep Cache
       id: cache-xenial
       uses: actions/cache@v1
       with:
         path: docker
         key: prep-cache-xenial
-    - name: Check cache
+    - name: Poor man's cache
       if: steps.cache-xenial.outputs.cache-hit != 'true'
-      run: |
-        echo "Need to prep the cache."
-        false
-    - uses: actions/checkout@v1
+      uses: actions/download-artifact@master
       with:
-        submodules: recursive
+        name: docker-xenial
+        path: docker/
     - name: Load Build Cache
       uses: actions/cache@v1
       with:
@@ -129,31 +142,33 @@ jobs:
     - prepare-mac
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: recursive
     - name: Load Docker Prep Cache
       id: cache-bionic
       uses: actions/cache@v1
       with:
         path: docker
         key: prep-cache-bionic
-    - name: Check cache
+    - name: Poor man's docker cache
       if: steps.cache-bionic.outputs.cache-hit != 'true'
-      run: |
-        echo "Need to prep the cache."
-        false
+      uses: actions/download-artifact@master
+      with:
+        name: docker-bionic
+        path: docker/
     - name: Load OSX Prep Cache
       id: cache-osx
       uses: actions/cache@v1
       with:
         path: osx
         key: prep-cache-osx
-    - name: Check cache
+    - name: Poor man's OSX cache
       if: steps.cache-osx.outputs.cache-hit != 'true'
-      run: |
-        echo "Need to prep the cache."
-        false
-    - uses: actions/checkout@v1
+      uses: actions/download-artifact@master
       with:
-        submodules: recursive
+        name: MacOS-SDK
+        path: osx/
     - name: Load Build Cache
       uses: actions/cache@v1
       with:
@@ -199,11 +214,12 @@ jobs:
       with:
         path: docker
         key: prep-cache-bionic
-    - name: Check cache
+    - name: Poor man's cache
       if: steps.cache-bionic.outputs.cache-hit != 'true'
-      run: |
-        echo "Need to prep the cache."
-        false
+      uses: actions/download-artifact@master
+      with:
+        name: docker-bionic
+        path: docker/
     - name: Load Build Cache
       uses: actions/cache@v1
       with:
