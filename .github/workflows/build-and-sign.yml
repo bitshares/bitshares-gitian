@@ -6,64 +6,90 @@ jobs:
     name: Prepare "bionic" Gitian build environment
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-      with:
-        submodules: recursive
     - name: Load Prep Cache
+      id: cache-bionic
       uses: actions/cache@v1
       with:
         path: docker
-        key: prep-cache-bioni
+        key: prep-cache-bionic
+    - uses: actions/checkout@v1
+      if: steps.cache-bionic.outputs.cache-hit != 'true'
+      with:
+        submodules: recursive
     - name: Prepare
+      if: steps.cache-bionic.outputs.cache-hit != 'true'
       run: |
-        if [ ! -r docker/base-bionic-amd64.tar.xz ]; then
-            echo "Argh - caching only works for push and pull events. See https://github.com/actions/cache/issues/63"
-            #vendor/gitian-builder/bin/make-base-vm --docker --suite bionic
-            #docker save base-bionic-amd64 | xz >docker/base-bionic-amd64.tar.xz
-        fi
+        mkdir -p docker
+        echo "Argh - caching only works for push and pull events. See https://github.com/actions/cache/issues/63"
+        vendor/gitian-builder/bin/make-base-vm --docker --suite bionic
+        docker save base-bionic-amd64 | xz >docker/base-bionic-amd64.tar.xz
   prepare-xenial:
     name: Prepare "xenial" Gitian build environment
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-      with:
-        submodules: recursive
     - name: Load Prep Cache
+      id: cache-xenial
       uses: actions/cache@v1
       with:
         path: docker
-        key: prep-cache-xenia
+        key: prep-cache-xenial
+    - uses: actions/checkout@v1
+      if: steps.cache-xenial.outputs.cache-hit != 'true'
+      with:
+        submodules: recursive
     - name: Prepare
+      if: steps.cache-xenial.outputs.cache-hit != 'true'
       run: |
-        if [ ! -r docker/base-xenial-amd64.tar.xz ]; then
-            echo "Argh - caching only works for push and pull events. See https://github.com/actions/cache/issues/63"
-            #vendor/gitian-builder/bin/make-base-vm --docker --suite xenial
-            #docker save base-xenial-amd64 | xz >docker/base-xenial-amd64.tar.xz
-        fi
+        mkdir -p docker
+        echo "Argh - caching only works for push and pull events. See https://github.com/actions/cache/issues/63"
+        vendor/gitian-builder/bin/make-base-vm --docker --suite xenial
+        docker save base-xenial-amd64 | xz >docker/base-xenial-amd64.tar.xz
   prepare-mac:
     name: Scrape mac-SDK
     runs-on: macos-latest
     steps:
+    - name: Load Prep Cache
+      id: cache-osx
+      uses: actions/cache@v1
+      with:
+        path: osx
+        key: prep-cache-osx
     - uses: actions/checkout@v1
+      if: steps.cache-osx.outputs.cache-hit != 'true'
       with:
         repository: tpoechtrager/osxcross
         ref: e0a171828a72a0d7ad4409489033536590008ebf
     - name: Package
+      if: steps.cache-osx.outputs.cache-hit != 'true'
       run: |
+        echo "Argh - caching only works for push and pull events. See https://github.com/actions/cache/issues/63"
         pushd ../osxcross
         tools/gen_sdk_package.sh
         popd
-        mv ../osxcross/*MacOSX* .
+        mkdir -p osx
+        mv ../osxcross/*MacOSX* osx
     - name: Upload SDK
+      if: steps.cache-osx.outputs.cache-hit != 'true'
       uses: actions/upload-artifact@master
       with:
         name: MacOS-SDK
-        path: MacOSX10.15.sdk.tar.xz
+        path: osx/MacOSX10.15.sdk.tar.xz
   linux:
     name: Build and sign linux binaries
     needs: prepare-xenial
     runs-on: ubuntu-latest
     steps:
+    - name: Load Prep Cache
+      id: cache-xenial
+      uses: actions/cache@v1
+      with:
+        path: docker
+        key: prep-cache-xenial
+    - name: Check cache
+      if: steps.cache-xenial.outputs.cache-hit != 'true'
+      run: |
+        echo "Need to prep the cache."
+        false
     - uses: actions/checkout@v1
       with:
         submodules: recursive
@@ -76,13 +102,9 @@ jobs:
           build-cache-linux-
     - name: Prepare
       run: |
-        if [ ! -r docker/base-xenial-amd64.tar.xz ]; then
-            echo "Argh - caching only works for push and pull events. See https://github.com/actions/cache/issues/63"
-            vendor/gitian-builder/bin/make-base-vm --docker --suite xenial
-        fi
+        docker load -i docker/base-xenial-amd64.tar.xz
     - name: Build and Sign
       run: |
-        #docker load -i docker/base-xenial-amd64.tar.xz
         sudo apt-get install ruby
         export GNUPGHOME=`pwd`/.gpghome
         ./run-gitian -b -O linux \
@@ -102,17 +124,36 @@ jobs:
         path: vendor/gitian-builder/build/out
   mac:
     name: Build and sign mac binaries
-    needs: prepare-bionic
+    needs:
+    - prepare-bionic
+    - prepare-mac
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-      with:
-        submodules: recursive
-    - name: Load Prep Cache
+    - name: Load Docker Prep Cache
+      id: cache-bionic
       uses: actions/cache@v1
       with:
         path: docker
         key: prep-cache-bionic
+    - name: Check cache
+      if: steps.cache-bionic.outputs.cache-hit != 'true'
+      run: |
+        echo "Need to prep the cache."
+        false
+    - name: Load OSX Prep Cache
+      id: cache-osx
+      uses: actions/cache@v1
+      with:
+        path: osx
+        key: prep-cache-osx
+    - name: Check cache
+      if: steps.cache-osx.outputs.cache-hit != 'true'
+      run: |
+        echo "Need to prep the cache."
+        false
+    - uses: actions/checkout@v1
+      with:
+        submodules: recursive
     - name: Load Build Cache
       uses: actions/cache@v1
       with:
@@ -122,26 +163,23 @@ jobs:
           build-cache-osx-
     - name: Prepare
       run: |
-        if [ ! -r docker/base-bionic-amd64.tar.xz ]; then
-            echo "Argh - caching only works for push and pull events. See https://github.com/actions/cache/issues/63"
-            #vendor/gitian-builder/bin/make-base-vm --docker --suite bionic
-        fi
+        docker load -i docker/base-bionic-amd64.tar.xz
     - name: Build and Sign
       run: |
-        #docker load -i docker/base-bionic-amd64.tar.xz
         sudo apt-get install ruby
-        echo "Skipping Mac build due to missing SDK"
-        #./run-gitian -b -O osx \
-        #             ${{ github.event.deployment.payload.coreversion }} \
-        #             -j 1 \
-        #  || ( echo Install log: && cat vendor/gitian-builder/var/install.log \
-        #       && echo Build log: && cat vendor/gitian-builder/var/build.log \
-        #       && false )
+        mkdir -p vendor/gitian-builder/inputs
+        mv osx/* vendor/gitian-builder/inputs
+        ./run-gitian -b -O osx \
+                     ${{ github.event.deployment.payload.coreversion }} \
+                     -j 1 \
+          || ( echo Install log: && cat vendor/gitian-builder/var/install.log \
+               && echo Build log: && cat vendor/gitian-builder/var/build.log \
+               && false )
         export GNUPGHOME=`pwd`/.gpghome
-        #PGP_PASS="${{ secrets.PGP_PASSPHRASE }}" \
-        #  ./run-gitian -s BitShares-Gitian-Auto-Build-Signer \
-        #               -O osx -p `pwd`/.github/gpg-wrapper \
-        #               ${{ github.event.deployment.payload.coreversion }}
+        PGP_PASS="${{ secrets.PGP_PASSPHRASE }}" \
+          ./run-gitian -s BitShares-Gitian-Auto-Build-Signer \
+                       -O osx -p `pwd`/.github/gpg-wrapper \
+                       ${{ github.event.deployment.payload.coreversion }}
     - name: Upload build artifacts
       uses: actions/upload-artifact@master
       with:
@@ -155,6 +193,17 @@ jobs:
     - uses: actions/checkout@v1
       with:
         submodules: recursive
+    - name: Load Docker Prep Cache
+      id: cache-bionic
+      uses: actions/cache@v1
+      with:
+        path: docker
+        key: prep-cache-bionic
+    - name: Check cache
+      if: steps.cache-bionic.outputs.cache-hit != 'true'
+      run: |
+        echo "Need to prep the cache."
+        false
     - name: Load Build Cache
       uses: actions/cache@v1
       with:
@@ -164,13 +213,9 @@ jobs:
           build-cache-win-
     - name: Prepare
       run: |
-        if [ ! -r docker/base-bionic-amd64.tar.xz ]; then
-            echo "Argh - caching only works for push and pull events. See https://github.com/actions/cache/issues/63"
-            vendor/gitian-builder/bin/make-base-vm --docker --suite bionic
-        fi
+        docker load -i docker/base-bionic-amd64.tar.xz
     - name: Build and Sign
       run: |
-        #docker load -i docker/base-bionic-amd64.tar.xz
         sudo apt-get install ruby
         ./run-gitian -b -O win \
                      ${{ github.event.deployment.payload.coreversion }} \
