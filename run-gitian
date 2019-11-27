@@ -56,8 +56,8 @@ _EOL_
             cat <<_EOL_
 https://github.com/tpoechtrager/osxcross/archive/e0a171828a72a0d7ad4409489033536590008ebf.tar.gz 7ef00c27b76745d4b44e13f291df60318588aa7b5d1788aeba5aca569ac7e989
 _EOL_
-            if [ ! -r inputs/MacOSX10.14.sdk.tar.xz ]; then
-                echo "Please download MacOSX10.14.sdk.tar.xz and place it in `pwd`/inputs." 1>&2
+            if [ ! -r inputs/MacOSX10.15.sdk.tar.xz ]; then
+                echo "Please download MacOSX10.15.sdk.tar.xz and place it in `pwd`/inputs." 1>&2
                 echo "Also be sure to read and understand Apple's licensing terms." 1>&2
                 exit 1
             fi
