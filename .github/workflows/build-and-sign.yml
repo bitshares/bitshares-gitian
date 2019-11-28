@@ -130,6 +130,15 @@ jobs:
           ./run-gitian -s BitShares-Gitian-Auto-Build-Signer \
                        -O linux -p `pwd`/.github/gpg-wrapper \
                        ${{ github.event.deployment.payload.coreversion }}
+    - name: Push Signatures
+      run: |
+        git config add user.name "BitShares Github Autobuild"
+        git config add user.email "bga@noreply"
+        BRANCH="autobuild-signatures-linux-$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        git checkout -b "$BRANCH"
+        git add signatures
+        git commit -m "Add Linux autobuild signature for ${{ github.event.deployment.payload.coreversion }}"
+        git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
     - name: Upload build artifacts
       uses: actions/upload-artifact@master
       with:
@@ -195,6 +204,15 @@ jobs:
           ./run-gitian -s BitShares-Gitian-Auto-Build-Signer \
                        -O osx -p `pwd`/.github/gpg-wrapper \
                        ${{ github.event.deployment.payload.coreversion }}
+    - name: Push Signatures
+      run: |
+        git config add user.name "BitShares Github Autobuild"
+        git config add user.email "bga@noreply"
+        BRANCH="autobuild-signatures-osx-$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        git checkout -b "$BRANCH"
+        git add signatures
+        git commit -m "Add OSX autobuild signature for ${{ github.event.deployment.payload.coreversion }}"
+        git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
     - name: Upload build artifacts
       uses: actions/upload-artifact@master
       with:
@@ -244,6 +262,15 @@ jobs:
           ./run-gitian -s BitShares-Gitian-Auto-Build-Signer \
                        -O win -p `pwd`/.github/gpg-wrapper \
                        ${{ github.event.deployment.payload.coreversion }}
+    - name: Push Signatures
+      run: |
+        git config add user.name "BitShares Github Autobuild"
+        git config add user.email "bga@noreply"
+        BRANCH="autobuild-signatures-win-$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        git checkout -b "$BRANCH"
+        git add signatures
+        git commit -m "Add win autobuild signature for ${{ github.event.deployment.payload.coreversion }}"
+        git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
     - name: Upload build artifacts
       uses: actions/upload-artifact@master
       with:
