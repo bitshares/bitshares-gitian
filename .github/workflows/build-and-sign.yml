@@ -135,7 +135,7 @@ jobs:
       run: |
         git config --add user.name "BitShares Github Autobuild"
         git config --add user.email "bga@noreply"
-        BRANCH="autobuild-signatures-linux-$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        BRANCH="autobuild-signatures-linux-$(date -u +%Y%m%dT%H%M%SZ)"
         git checkout -b "$BRANCH"
         git add signatures
         git commit -m "Add Linux autobuild signature for ${{ github.event.deployment.payload.coreversion }}"
@@ -210,7 +210,7 @@ jobs:
       run: |
         git config --add user.name "BitShares Github Autobuild"
         git config --add user.email "bga@noreply"
-        BRANCH="autobuild-signatures-osx-$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        BRANCH="autobuild-signatures-osx-$(date -u +%Y%m%dT%H%M%SZ)"
         git checkout -b "$BRANCH"
         git add signatures
         git commit -m "Add OSX autobuild signature for ${{ github.event.deployment.payload.coreversion }}"
@@ -269,7 +269,7 @@ jobs:
       run: |
         git config --add user.name "BitShares Github Autobuild"
         git config --add user.email "bga@noreply"
-        BRANCH="autobuild-signatures-win-$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        BRANCH="autobuild-signatures-win-$(date -u +%Y%m%dT%H%M%SZ)"
         git checkout -b "$BRANCH"
         git add signatures
         git commit -m "Add win autobuild signature for ${{ github.event.deployment.payload.coreversion }}"
