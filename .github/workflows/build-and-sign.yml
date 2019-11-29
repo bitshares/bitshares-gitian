@@ -118,6 +118,7 @@ jobs:
         docker load -i docker/base-xenial-amd64.tar.xz
     - name: Build and Sign
       run: |
+        sudo apt-get update
         sudo apt-get install ruby
         export GNUPGHOME=`pwd`/.gpghome
         ./run-gitian -b -O linux \
@@ -190,6 +191,7 @@ jobs:
         docker load -i docker/base-bionic-amd64.tar.xz
     - name: Build and Sign
       run: |
+        sudo apt-get update
         sudo apt-get install ruby
         mkdir -p vendor/gitian-builder/inputs
         mv osx/* vendor/gitian-builder/inputs
@@ -250,6 +252,7 @@ jobs:
         docker load -i docker/base-bionic-amd64.tar.xz
     - name: Build and Sign
       run: |
+        sudo apt-get update
         sudo apt-get install ruby
         ./run-gitian -b -O win \
                      ${{ github.event.deployment.payload.coreversion }} \
