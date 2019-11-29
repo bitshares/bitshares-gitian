@@ -133,8 +133,8 @@ jobs:
                        ${{ github.event.deployment.payload.coreversion }}
     - name: Push Signatures
       run: |
-        git config add user.name "BitShares Github Autobuild"
-        git config add user.email "bga@noreply"
+        git config --add user.name "BitShares Github Autobuild"
+        git config --add user.email "bga@noreply"
         BRANCH="autobuild-signatures-linux-$(date -u +%Y-%m-%dT%H:%M:%SZ)"
         git checkout -b "$BRANCH"
         git add signatures
@@ -208,8 +208,8 @@ jobs:
                        ${{ github.event.deployment.payload.coreversion }}
     - name: Push Signatures
       run: |
-        git config add user.name "BitShares Github Autobuild"
-        git config add user.email "bga@noreply"
+        git config --add user.name "BitShares Github Autobuild"
+        git config --add user.email "bga@noreply"
         BRANCH="autobuild-signatures-osx-$(date -u +%Y-%m-%dT%H:%M:%SZ)"
         git checkout -b "$BRANCH"
         git add signatures
@@ -267,8 +267,8 @@ jobs:
                        ${{ github.event.deployment.payload.coreversion }}
     - name: Push Signatures
       run: |
-        git config add user.name "BitShares Github Autobuild"
-        git config add user.email "bga@noreply"
+        git config --add user.name "BitShares Github Autobuild"
+        git config --add user.email "bga@noreply"
         BRANCH="autobuild-signatures-win-$(date -u +%Y-%m-%dT%H:%M:%SZ)"
         git checkout -b "$BRANCH"
         git add signatures
