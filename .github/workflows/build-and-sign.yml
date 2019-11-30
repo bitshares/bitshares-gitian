@@ -139,7 +139,7 @@ jobs:
         git checkout -b "$BRANCH"
         git add signatures
         git commit -m "Add Linux autobuild signature for ${{ github.event.deployment.payload.coreversion }}"
-        git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
+        git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
     - name: Upload build artifacts
       uses: actions/upload-artifact@master
       with:
@@ -214,7 +214,7 @@ jobs:
         git checkout -b "$BRANCH"
         git add signatures
         git commit -m "Add OSX autobuild signature for ${{ github.event.deployment.payload.coreversion }}"
-        git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
+        git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
     - name: Upload build artifacts
       uses: actions/upload-artifact@master
       with:
@@ -273,7 +273,7 @@ jobs:
         git checkout -b "$BRANCH"
         git add signatures
         git commit -m "Add win autobuild signature for ${{ github.event.deployment.payload.coreversion }}"
-        git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
+        git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
     - name: Upload build artifacts
       uses: actions/upload-artifact@master
       with:
