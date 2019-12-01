@@ -21,8 +21,13 @@ jobs:
       run: |
         mkdir -p docker
         echo "Argh - caching only works for push and pull events. See https://github.com/actions/cache/issues/63"
-        vendor/gitian-builder/bin/make-base-vm --docker --suite bionic
-        docker save base-bionic-amd64 | xz >docker/base-bionic-amd64.tar.xz
+        # Attempt short-cut...
+        curl -L -o docker/base-bionic-amd64.zip https://github.com/pmconrad/bitshares-gitian/suites/335677056/artifacts/497179
+        unzip -j -d docker docker/base-bionic-amd64.zip
+        if [ ! -r docker/base-bionic-amd64.tar.xz ]; then
+            vendor/gitian-builder/bin/make-base-vm --docker --suite bionic
+            docker save base-bionic-amd64 | xz >docker/base-bionic-amd64.tar.xz
+        fi
     - name: Upload build artifacts
       if: steps.cache-bionic.outputs.cache-hit != 'true'
       uses: actions/upload-artifact@master
@@ -48,8 +53,13 @@ jobs:
       run: |
         mkdir -p docker
         echo "Argh - caching only works for push and pull events. See https://github.com/actions/cache/issues/63"
-        vendor/gitian-builder/bin/make-base-vm --docker --suite xenial
-        docker save base-xenial-amd64 | xz >docker/base-xenial-amd64.tar.xz
+        # Attempt short-cut...
+        curl -L -o docker/base-xenial-amd64.zip https://github.com/pmconrad/bitshares-gitian/suites/335677056/artifacts/497178
+        unzip -j -d docker docker/base-xenial-amd64.zip
+        if [ ! -r docker/base-xenial-amd64.tar.xz ]; then
+            vendor/gitian-builder/bin/make-base-vm --docker --suite xenial
+            docker save base-xenial-amd64 | xz >docker/base-xenial-amd64.tar.xz
+        fi
     - name: Upload build artifacts
       if: steps.cache-xenial.outputs.cache-hit != 'true'
       uses: actions/upload-artifact@master
@@ -75,11 +85,16 @@ jobs:
       if: steps.cache-osx.outputs.cache-hit != 'true'
       run: |
         echo "Argh - caching only works for push and pull events. See https://github.com/actions/cache/issues/63"
-        pushd ../osxcross
-        tools/gen_sdk_package.sh
-        popd
         mkdir -p osx
-        mv ../osxcross/*MacOSX* osx
+        # Attempt short-cut...
+        curl -L -o osx/MacOSX10.15.zip https://github.com/pmconrad/bitshares-gitian/suites/335677056/artifacts/497177
+        unzip -j -d osx osx/MacOSX10.15.zip
+        if [ ! -r osx/MacOSX10.15.sdk.tar.xz ]; then
+            pushd ../osxcross
+            tools/gen_sdk_package.sh
+            popd
+            mv ../osxcross/*MacOSX* osx
+        fi
     - name: Upload SDK
       if: steps.cache-osx.outputs.cache-hit != 'true'
       uses: actions/upload-artifact@master
