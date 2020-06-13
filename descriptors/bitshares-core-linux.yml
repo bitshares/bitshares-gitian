@@ -81,8 +81,8 @@ script: |
 
   cd bitshares
   git submodule update --init --recursive
-  cp libraries/wallet/wallet.cpp{,.orig}
-  sed -i '/__DATE__/d' libraries/wallet/wallet.cpp
+  cp libraries/wallet/wallet_api_impl.cpp{,.orig}
+  sed -i '/__DATE__/d' libraries/wallet/wallet_api_impl.cpp
   # Workaround for #1791
   sed -i '/target_link_lib/s=..Boost_LIBRARIES.==;/target_link_lib/s=ZLIB_LIBRARIES.=\0 ${Boost_LIBRARIES}=' \
       libraries/fc/CMakeLists.txt
