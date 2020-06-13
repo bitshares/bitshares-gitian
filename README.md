@@ -138,6 +138,8 @@ The plan for such breaking changes is:
 * future signatures for these supported versions can be added on that branch only
 * immediately after the breaking commit, remove all signatures for no-longer supported versions from master
 
+Note: it is a bit tricky to reproduce the `3.3.1` and `3.3.2` binaries due to changes on minor version of operating systems. Please check [issue #34](https://github.com/bitshares/bitshares-gitian/issues/34) for more info.
+
 ### Existing branches
 
 * [3.3.1](https://github.com/bitshares/bitshares-gitian/tree/3.3.1)
