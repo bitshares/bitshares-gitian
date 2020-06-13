@@ -107,7 +107,7 @@ script: |
   NAME="bitshares-core-`git describe --tags`-linux-amd64-bin"
   mkdir -p "DIST/$NAME"
   ARTIFACTS="programs/witness_node/witness_node programs/cli_wallet/cli_wallet"
-  strip $ARTIFACTS
+  strip -R .comment -R .note.gnu.build-id $ARTIFACTS
   mv $ARTIFACTS "DIST/$NAME"
   tar xfz ../../supplement.tar.gz
   mv supplement/README-core.md "DIST/$NAME/README.md"
