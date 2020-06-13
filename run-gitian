@@ -1,11 +1,48 @@
 #!/bin/sh
 
-set -e
+if [ ! -f "`dirname "$0"`/vendor/gitian-builder/bin/gbuild" ]; then
+    echo "Gitian-builder not found, please update submodule" 1>&2
+    exit 1
+fi
 
 cd "`dirname "$0"`/vendor/gitian-builder"
-mkdir -p var
-mkdir -p inputs
 export PATH="$PATH:`pwd`/bin:`pwd`/libexec"
+
+if ! `gbuild --help 1>/dev/null`; then # check if gbuild works
+    exit 1
+fi
+
+usage() {
+    echo "Usage:\t$0 [-b | -s KEY_ID | -v] [-O linux|win|osx] VERSION [builder-options]"
+    echo "\t$0 [-O linux|win|osx] KEY_ID VERSION [builder-options]"
+    echo "\t$0 --help"
+    echo ""
+    echo "-b\tbuild"
+    echo "-s\tsign"
+    echo "-v\tverify"
+    echo "\t(will build and sign with KEY_ID if neither option is present)"
+    echo "-O\tchoose target operating system linux or win, defaults to linux"
+    echo "--help\tdisplay this help and exit"
+    echo ""
+    echo "KEY_ID\tis the GPG key ID to use for signing"
+    echo "VERSION\tis the BitShares release version to build, sign or verify"
+    echo ""
+    echo "builder-options:"
+    gbuild --help 2>&1 | tail -n +2
+    echo ""
+    echo "You should allow at least 4G RAM for the build (-m 4096), more if"
+    echo "you want to build with more than one core!"
+}
+
+if [ "$1" = "--help" ]; then
+    usage; exit 0
+fi
+
+if [ "$#" -lt 1 ]; then
+    usage 1>&2; exit 1
+fi
+
+set -e
 
 BUILD=
 SIGN=
@@ -14,26 +51,48 @@ OS=linux
 while [ "$1" = "-b" -o "$1" = "-s" -o "$1" = "-v" -o "$1" = "-O" ]; do
     case "$1" in
       -b) BUILD=1; ;;
-      -s) SIGN=1; KEY_ID="$2"; shift;  ;;
+      -s) SIGN=1;
+          if [ -z "$2" ]; then
+              echo "Missing argument to -s" 1>&2
+              exit 1
+          fi
+          KEY_ID="$2"; shift; ;;
       -v) VERIFY=1; ;;
-      -O) OS="$2"; shift;;
+      -O) if [ -z "$2" ]; then
+              echo "Missing argument to -O" 1>&2
+              exit 1
+          fi
+          OS="$2"; shift; ;;
     esac
     shift
 done
 
+case "$OS" in
+    linux|win|osx) true; ;;
+    *) echo "Unsupported OS '$OS', try 'linux', 'osx' or 'win' instead!" 1>&2
+       exit 1
+       ;;
+esac
+
 if [ -z "$BUILD$SIGN$VERIFY" ]; then
     BUILD=1
     SIGN=1
+    if [ "$#" -lt 1 ]; then
+        usage 1>&2; exit 1
+    fi
     KEY_ID="$1"
     shift
 fi
 
-case "$OS" in
-    linux|win|osx) true; ;;
-    *) echo "Unsupported OS '$OS', try 'linux' or 'win' instead!" 1>&2
-       exit 1
-       ;;
-esac
+if [ "$#" -lt 1 ]; then
+    usage 1>&2; exit 1
+fi
+
+VERSION="$1"
+shift
+
+mkdir -p var
+mkdir -p inputs
 
 if [ -n "$BUILD" ]; then
     tar cfz inputs/supplement.tar.gz -C ../.. supplement
@@ -74,28 +133,6 @@ _EOL_
           || ( echo "inputs/$FILE is wrong!?" 1>&2 && exit 1 )
       done
 fi
-
-if [ "$#" -lt 1 ]; then
-    echo "Usage:\t$0 [-b | -s KEY_ID | -v] [-O linux|win|osx] VERSION [builder-options]" 1>&2
-    echo "\t$0 KEY_ID VERSION [builder-options]" 1>&2
-    echo "-b\tbuild" 1>&2
-    echo "-s\tsign" 1>&2
-    echo "-v\tverify" 1>&2
-    echo "-O\tchoose target operating system linux or win, defaults to linux" 1>&2
-    echo "\t(will build and sign with KEY_ID if neither option is present)" 1>&2
-    echo "VERSION\tis the BitShares release version to build" 1>&2
-    echo "KEY_ID\tis the GPG key ID to use for signing" 1>&2
-    echo "" 1>&2
-    echo "builder-options:" 1>&2
-    gbuild --help 2>&1 | tail -n +2 1>&2
-    echo "" 1>&2
-    echo "You should allow at least 4G RAM for the build (-m 4096), more if" 1>&2
-    echo "you want to build with more than one core!" 1>&2
-    exit 1
-fi
-
-VERSION="$1"
-shift
 
 [ -z "$BUILD" ]  || gbuild "../../descriptors/bitshares-core-$OS.yml" -c bitshares="$VERSION" "$@"
 [ -z "$SIGN" ]   || gsign --signer "$KEY_ID" --destination ../../signatures --release "$VERSION"-"$OS" \
