@@ -126,7 +126,6 @@ script: |
   popd
 
   cd bitshares
-  git submodule update --init --recursive
   sed -i '/__DATE__/d' libraries/wallet/wallet_api_impl.cpp
   sed -i "/[ep].configure/s/$/ --host=${DARWIN%-} CC=${DARWIN}clang LD=${DARWIN}clang/" libraries/fc/CMakeLists.txt
   sed -i '/CheckLib\(rary\|cxxAtomic\)/d' libraries/fc/CMakeLists.txt

@@ -80,7 +80,6 @@ script: |
   popd
 
   cd bitshares
-  git submodule update --init --recursive
   cp libraries/wallet/wallet_api_impl.cpp{,.orig}
   sed -i '/__DATE__/d' libraries/wallet/wallet_api_impl.cpp
   # Workaround for #1791
