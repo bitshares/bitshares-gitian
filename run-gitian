@@ -136,7 +136,10 @@ _EOL_
       done
 fi
 
-[ -z "$BUILD" ]  || gbuild "../../descriptors/bitshares-core-$OS.yml" -c bitshares="$VERSION" "$@"
+[ -z "$BUILD" ]  || (
+    rm -rf inputs/bitshares
+    gbuild "../../descriptors/bitshares-core-$OS.yml" -c bitshares="$VERSION" "$@"
+)
 [ -z "$SIGN" ]   || gsign --signer "$KEY_ID" --destination ../../signatures --release "$VERSION"-"$OS" \
                           "../../descriptors/bitshares-core-$OS.yml"
 [ -z "$VERIFY" ] || gverify --destination ../../signatures --release "$VERSION"-"$OS" \
