@@ -24,7 +24,7 @@ remotes:
   dir: bitshares
 files:
 - supplement.tar.gz
-- curl-7.65.3.tar.bz2
+- curl-7.67.0.tar.bz2
 - openssl-1.0.2t.tar.gz
 script: |
   set -e -o pipefail
@@ -80,8 +80,8 @@ script: |
   popd
 
   cd bitshares
-  cp libraries/wallet/wallet.cpp{,.orig}
-  sed -i '/__DATE__/d' libraries/wallet/wallet.cpp
+  cp libraries/wallet/wallet_api_impl.cpp{,.orig}
+  sed -i '/__DATE__/d' libraries/wallet/wallet_api_impl.cpp
   # Workaround for #1791
   sed -i '/target_link_lib/s=..Boost_LIBRARIES.==;/target_link_lib/s=ZLIB_LIBRARIES.=\0 ${Boost_LIBRARIES}=' \
       libraries/fc/CMakeLists.txt

@@ -23,8 +23,8 @@ remotes:
 files:
 - supplement.tar.gz
 - zlib-1.2.11.tar.gz
-- openssl-1.1.1c.tar.gz
-- curl-7.65.0.tar.bz2
+- openssl-1.1.1d.tar.gz
+- curl-7.67.0.tar.bz2
 - boost_1_69_0.tar.bz2
 script: |
   set -e -o pipefail
@@ -116,8 +116,7 @@ script: |
   popd
 
   cd bitshares
-  sed -i '/__DATE__/d' libraries/wallet/wallet.cpp
-  sed -i '/hardfork.hpp/d' libraries/chain/CMakeLists.txt
+  sed -i '/__DATE__/d' libraries/wallet/wallet_api_impl.cpp
   sed -i "/add_executable/alist( APPEND PLATFORM_SPECIFIC_LIBS $LIBS/lib/libcurl.a -lws2_32 -lpthread -lcrypt32 )" \
       programs/witness_node/CMakeLists.txt
   sed -i '/fPIC/aadd_linker_flag( "--no-insert-timestamp" )' CMakeLists.txt
@@ -136,26 +135,9 @@ script: |
         -D CMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
         -D CMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
         -D CMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
-        -D OPENSSL_CONF_SOURCE=$HOME/build/${OPENSSL%.tar.gz}/apps/openssl.cnf \
+        -D GRAPHENE_DISABLE_UNITY_BUILD=ON \
         ..
   rm "$LIBS/include/boost/context/all.hpp" # hack for cmake older than boost
-  mkdir -p libraries/chain/include/graphene/chain/
-  cat ../libraries/chain/hardfork.d/* >libraries/chain/include/graphene/chain/hardfork.hpp
-  make $MAKEOPTS embed_genesis
-  ln -sf /bin/true libraries/egenesis/embed_genesis
-  CHAIN_ID="`sha256sum ../libraries/egenesis/genesis.json |cut -d\  -f 1`"
-  sed "/generated_file_banner/d;s=\${.*}=$CHAIN_ID=" < ../libraries/egenesis/egenesis_brief.cpp.tmpl \
-                                                     > libraries/egenesis/egenesis_brief.cpp
-  ( sed "/generated_file_banner/d;s=\${.*}=$CHAIN_ID=" < ../libraries/egenesis/egenesis_brief.cpp.tmpl \
-        | head -38
-    echo -n 'result = "'
-    sed 's=["\\]=\\\0=g' <../libraries/egenesis/genesis.json \
-      | tr '\n' '|' \
-      | sed 's=|=\\n=g'
-    echo '";'
-    sed "/generated_file_banner/d;s=\${.*}=$CHAIN_ID=" < ../libraries/egenesis/egenesis_brief.cpp.tmpl \
-        | tail -n +40
-  ) >libraries/egenesis/egenesis_full.cpp
   make $MAKEOPTS witness_node cli_wallet
 
   rm -rf DIST
