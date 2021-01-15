@@ -113,7 +113,7 @@ script: |
   mv supplement/licenses "DIST/$NAME/licenses"
   rm -f "DIST/$NAME/licenses/LGPL"*
   mv supplement/LICENSE-core-linux.txt "DIST/$NAME/LICENSE.txt"
-  tail -q -n +6 ../CONTRIBUTORS.txt ../libraries/fc/CONTRIBUTORS.txt | sort | uniq \
+  tail -q -n +6 ../CONTRIBUTORS.txt ../libraries/fc/CONTRIBUTORS.txt | sort -f | uniq \
        >"DIST/$NAME/CONTRIBUTORS.txt"
   cp ../libraries/fc/vendor/websocketpp/COPYING "DIST/$NAME/licenses/WebsocketPP.txt"
   cp ../libraries/fc/vendor/editline/LICENSE "DIST/$NAME/licenses/editline.txt"
