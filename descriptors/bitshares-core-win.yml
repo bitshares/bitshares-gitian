@@ -150,8 +150,9 @@ script: |
   mv supplement/README-core.md "DIST/$NAME/README.md"
   mv supplement/licenses "DIST/$NAME/licenses"
   mv supplement/LICENSE-core-win.txt "DIST/$NAME/LICENSE.txt"
-  tail -q -n +6 ../CONTRIBUTORS.txt ../libraries/fc/CONTRIBUTORS.txt | sort -f | uniq \
-       >"DIST/$NAME/CONTRIBUTORS.txt"
+  tail -q -n +6 ../CONTRIBUTORS.txt >"DIST/$NAME/CONTRIBUTORS.txt"
+  cp ../libraries/fc/LICENSE.md "DIST/$NAME/licenses/fc.md"
+  tail -q -n +6 ../libraries/fc/CONTRIBUTORS.txt >"DIST/$NAME/licenses/CONTRIBUTORS-fc.txt"
   cp ../libraries/fc/vendor/websocketpp/COPYING "DIST/$NAME/licenses/WebsocketPP.txt"
   cp ../libraries/fc/licenses/ZLIB_LICENSE.md "DIST/$NAME/licenses/ZLIB.md"
   chmod -R u+rw,go+r-w,a+X "DIST/$NAME"
