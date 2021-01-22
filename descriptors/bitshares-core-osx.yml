@@ -176,7 +176,7 @@ script: |
   if test -n "$GBUILD_CACHE_ENABLED"; then
     # pack ccache into one file to keep the manifest short
     pushd "${GBUILD_PACKAGE_CACHE}"
-    tar cf ccache.tar ccache
+    tar cf ccache.tar --sort=name ccache
     rm -rf ccache
     popd
   fi
