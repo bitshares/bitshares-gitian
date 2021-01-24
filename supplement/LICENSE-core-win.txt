@@ -2,8 +2,8 @@ The BitShares core software comes with this license:
 
 =============================================================================
 
-Copyright (c) 2015-2016 Cryptonomex Inc. <contact@cryptonomex.com>
-Copyright (c) 2015-2017 contributors <CONTRIBUTORS.txt>
+Copyright (c) 2015-2021 Cryptonomex Inc. <contact@cryptonomex.com>, and
+contributors (see CONTRIBUTORS.txt)
 
 The MIT License
 
@@ -30,10 +30,19 @@ THE SOFTWARE.
 This distribution also contains and/or links to software that is licensed
 under the following additional terms:
 
+* The FC library is copyright BitShares Blockchain Foundation and
+  contributors under the MIT license with additional clarifications.
+  See licenses/fc.md .
+  The list of contributors is in licenses/CONTRIBUTORS-fc.txt .
+  The third party authors mentioned in the license are also listed below.
+* The bloom filter implementation is copyright Arash Partow and covered by
+  the MIT license.
 * Utf8 support is copyright Nemanja Trifunovic and covered by the
   MIT license (Thrift variant). See licenses/utf8.txt .
 * Base58 support is copyright Satoshi Nakamoto and The Bitcoin Developers and
   is covered by the MIT/X11 license. See licenses/MIT.txt .
+* Base64 support is copyright René Nyffenegger and covered by the zlib/libpng
+  license. See licenses/ZLIB.md.
 * Support for the city hash algorithm city.cpp is copyright Google, Inc. and
   covered by the MIT/X11 license. See licenses/MIT.txt .
 * Elliptic Curve cryptography routines are copyright Pieter Wuille and
@@ -42,8 +51,12 @@ under the following additional terms:
   BSD license. The websocket library contains further code that is copyright
   by René Nyffenegger, Micael Hildenborg, Aladdin Enterprises and Bjoern
   Hoehrmann, respectively. See licenses/WebsocketPP.txt .
-* SSL support is copyright The OpenSSL Project and includes software from both
-  Eric A. Young and Tim Hudson. See licenses/OpenSSL.txt .
+* SSL support is copyright The OpenSSL Project and includes software from
+  both Eric A. Young and Tim Hudson. See licenses/OpenSSL.txt .
+* The curl library used in this software is copyright Daniel Stenberg and
+  many contributors under the curl license. See licenses/curl.md . The THANKS
+  file mentioned in the license is located at
+  https://curl.se/docs/thanks.html .
 * The contained programs were built using the MinGW compiler and linked
   against their Windows System Libraries, which are covered by the MIT/X11
   license. See licenses/MIT.txt .

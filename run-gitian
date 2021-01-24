@@ -103,7 +103,7 @@ if [ -n "$BUILD" ]; then
         fi
     fi
 
-    tar cfz inputs/supplement.tar.gz -C ../.. supplement
+    tar cfz inputs/supplement.tar.gz --sort=name -C ../.. supplement
 
     (
         echo https://curl.haxx.se/download/curl-7.67.0.tar.bz2 dd5f6956821a548bf4b44f067a530ce9445cc8094fd3e7e3fc7854815858586c
