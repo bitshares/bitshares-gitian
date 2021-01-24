@@ -121,6 +121,8 @@ script: |
       programs/witness_node/CMakeLists.txt
   sed -i '/fPIC/aadd_linker_flag( "--no-insert-timestamp" )' CMakeLists.txt
 
+  git tag -d tobuild || true # Remove tag added by gitian-builder
+
   mkdir -p build
   cd build
   touch "$LIBS/include/boost/context/all.hpp" # hack for cmake older than boost

@@ -90,6 +90,8 @@ script: |
       -e 's=ssl crypto=${OPENSSL_LIBRARIES} ${BOOST_THREAD_LIBRARY} ${CMAKE_DL_LIBS}=' \
       CMakeLists.txt
 
+  git tag -d tobuild || true # Remove tag added by gitian-builder
+
   mkdir build
   cd build
   cmake -D CMAKE_BUILD_TYPE=Release \
