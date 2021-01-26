@@ -24,8 +24,8 @@ remotes:
   dir: bitshares
 files:
 - supplement.tar.gz
-- curl-7.67.0.tar.bz2
-- openssl-1.0.2t.tar.gz
+- curl-7.74.0.tar.bz2
+- openssl-1.0.2u.tar.gz
 script: |
   set -e -o pipefail
 
@@ -89,6 +89,8 @@ script: |
   sed -i -e '/set..OLD_SUFF/ifind_package(OpenSSL REQUIRED)' \
       -e 's=ssl crypto=${OPENSSL_LIBRARIES} ${BOOST_THREAD_LIBRARY} ${CMAKE_DL_LIBS}=' \
       CMakeLists.txt
+
+  git tag -d tobuild || true # Remove tag added by gitian-builder
 
   mkdir build
   cd build

@@ -23,8 +23,8 @@ remotes:
 files:
 - supplement.tar.gz
 - zlib-1.2.11.tar.gz
-- openssl-1.1.1d.tar.gz
-- curl-7.67.0.tar.bz2
+- openssl-1.1.1i.tar.gz
+- curl-7.74.0.tar.bz2
 - boost_1_69_0.tar.bz2
 script: |
   set -e -o pipefail
@@ -120,6 +120,8 @@ script: |
   sed -i "/add_executable/alist( APPEND PLATFORM_SPECIFIC_LIBS $LIBS/lib/libcurl.a -lws2_32 -lpthread -lcrypt32 )" \
       programs/witness_node/CMakeLists.txt
   sed -i '/fPIC/aadd_linker_flag( "--no-insert-timestamp" )' CMakeLists.txt
+
+  git tag -d tobuild || true # Remove tag added by gitian-builder
 
   mkdir -p build
   cd build
