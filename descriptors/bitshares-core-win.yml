@@ -157,6 +157,7 @@ script: |
   tail -q -n +6 ../libraries/fc/CONTRIBUTORS.txt >"DIST/$NAME/licenses/CONTRIBUTORS-fc.txt"
   cp ../libraries/fc/vendor/websocketpp/COPYING "DIST/$NAME/licenses/WebsocketPP.txt"
   cp ../libraries/fc/licenses/ZLIB_LICENSE.md "DIST/$NAME/licenses/ZLIB.md"
+  cp ../libraries/fc/licenses/MIT_variant_LICENSE.md "DIST/$NAME/licenses/variant.md"
   chmod -R u+rw,go+r-w,a+X "DIST/$NAME"
   TIMESTAMP="$(grep define.*TIMESTAMP libraries/utilities/git_revision.cpp | cut -d\  -f 3)"
   find DIST | xargs touch --date $(date -u --date="@$TIMESTAMP" +%Y-%m-%dT%H:%M:%SZ)

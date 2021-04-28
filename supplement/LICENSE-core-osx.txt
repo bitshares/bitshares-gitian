@@ -37,6 +37,8 @@ under the following additional terms:
   The third party authors mentioned in the license are also listed below.
 * The bloom filter implementation is copyright Arash Partow and covered by
   the MIT license.
+* The static variant implementation is copyright Kenneth Micklas and covered
+  by the MIT license. See licenses/variant.md .
 * Utf8 support is copyright Nemanja Trifunovic and covered by the
   MIT license (Thrift variant). See licenses/utf8.txt .
 * Base58 support is copyright Satoshi Nakamoto and The Bitcoin Developers and
