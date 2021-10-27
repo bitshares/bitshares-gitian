@@ -3,7 +3,7 @@ name: bitshares-core-win
 enable_cache: true
 distro: ubuntu
 suites:
-- bionic
+- focal
 architectures:
 - amd64
 packages:
@@ -82,6 +82,8 @@ script: |
   tar xfj "$CURL"
   pushd "${CURL%.tar.bz2}"
   sed -i 's=-lgdi32=-lcrypt32 \0='  configure
+  # touch the file to get around an inline sed issue, see https://github.com/docker/machine/issues/4824
+  touch configure
   PKG_CONFIG_PATH="$LIBS/lib/pkgconfig" ./configure --host=x86_64-w64-mingw32 \
                                                     --prefix="$LIBS" \
                                                     --disable-shared \
@@ -100,6 +102,8 @@ script: |
   pushd "${BOOST%.tar.bz2}"
   # See https://github.com/boostorg/context/issues/101
   sed -i '/os.\(name\|platform\)/d;/local tmp = /s=elf=pe=;/local tmp = /s=sysv=ms=' libs/context/build/Jamfile.v2
+  # touch the file to get around an inline sed issue, see https://github.com/docker/machine/issues/4824
+  touch libs/context/build/Jamfile.v2
   ./bootstrap.sh --prefix=$LIBS
   echo "using gcc : mingw32 : x86_64-w64-mingw32-g++ ;" > user-config.jam
   ./b2 --user-config=user-config.jam \
@@ -117,9 +121,15 @@ script: |
 
   cd bitshares
   sed -i '/__DATE__/d' libraries/wallet/wallet_api_impl.cpp
+  # touch the file to get around an inline sed issue, see https://github.com/docker/machine/issues/4824
+  touch libraries/wallet/wallet_api_impl.cpp
   sed -i "/add_executable/alist( APPEND PLATFORM_SPECIFIC_LIBS $LIBS/lib/libcurl.a -lws2_32 -lpthread -lcrypt32 )" \
       programs/witness_node/CMakeLists.txt
+  # touch the file to get around an inline sed issue, see https://github.com/docker/machine/issues/4824
+  touch programs/witness_node/CMakeLists.txt
   sed -i '/fPIC/aadd_linker_flag( "--no-insert-timestamp" )' CMakeLists.txt
+  # touch the file to get around an inline sed issue, see https://github.com/docker/machine/issues/4824
+  touch CMakeLists.txt
 
   git tag -d tobuild || true # Remove tag added by gitian-builder
 
@@ -130,6 +140,7 @@ script: |
         -D CMAKE_C_COMPILER=/usr/bin/x86_64-w64-mingw32-gcc-posix \
         -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
         -D CMAKE_CXX_COMPILER=/usr/bin/x86_64-w64-mingw32-g++-posix \
+        -D CMAKE_CXX_FLAGS=-Wa,-mbig-obj \
         -D CMAKE_SYSTEM_NAME=Windows \
         -D CURL_STATICLIB=ON \
         -D CMAKE_EXE_LINKER_FLAGS=--static \
