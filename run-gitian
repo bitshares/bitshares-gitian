@@ -106,17 +106,12 @@ if [ -n "$BUILD" ]; then
     tar cfz inputs/supplement.tar.gz --sort=name -C ../.. supplement
 
     (
-        echo https://curl.se/download/curl-7.74.0.tar.bz2 0f4d63e6681636539dc88fa8e929f934cd3a840c46e0bf28c73be11e521b77a5
+        echo https://curl.se/download/curl-7.79.1.tar.xz 0606f74b1182ab732a17c11613cbbaf7084f2e6cca432642d0e3ad7c224c3689
+        echo https://www.openssl.org/source/openssl-1.1.1l.tar.gz 0b7a3e5e59c34827fe0c3a74b7ec8baef302b98fa80088d7f9153aa16fa76bd1
         if [ "$OS" = "win" -o "$OS" = "osx" ]; then
             cat <<_EOL_
-https://www.openssl.org/source/openssl-1.1.1i.tar.gz e8be6a35fe41d10603c3cc635e93289ed00bf34b79671a3a4de64fcee00d5242
 https://boostorg.jfrog.io/artifactory/main/release/1.69.0/source/boost_1_69_0.tar.bz2 8f32d4617390d1c2d16f26a27ab60d97807b35440d45891fa340fc2648b04406
 https://zlib.net/zlib-1.2.11.tar.gz c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1
-_EOL_
-        else
-            # linux
-            cat <<_EOL_
-https://www.openssl.org/source/old/1.0.2/openssl-1.0.2u.tar.gz ecd0c6ffb493dd06707d38b14bb4d8c2288bb7033735606569d8f90f89669d16
 _EOL_
         fi
         if [ "$OS" = "osx" ]; then
