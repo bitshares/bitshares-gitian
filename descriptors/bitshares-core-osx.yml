@@ -24,7 +24,7 @@ files:
 - supplement.tar.gz
 - zlib-1.2.11.tar.gz
 - openssl-1.1.1l.tar.gz
-- curl-7.79.1.tar.xz
+- curl-7.76.1.tar.xz
 - boost_1_69_0.tar.bz2
 - MacOSX10.15.sdk.tar.xz
 - e0a171828a72a0d7ad4409489033536590008ebf.tar.gz

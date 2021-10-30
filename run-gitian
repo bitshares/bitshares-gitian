@@ -106,7 +106,6 @@ if [ -n "$BUILD" ]; then
     tar cfz inputs/supplement.tar.gz --sort=name -C ../.. supplement
 
     (
-        echo https://curl.se/download/curl-7.79.1.tar.xz 0606f74b1182ab732a17c11613cbbaf7084f2e6cca432642d0e3ad7c224c3689
         echo https://www.openssl.org/source/openssl-1.1.1l.tar.gz 0b7a3e5e59c34827fe0c3a74b7ec8baef302b98fa80088d7f9153aa16fa76bd1
         if [ "$OS" = "win" -o "$OS" = "osx" ]; then
             cat <<_EOL_
@@ -116,8 +115,11 @@ _EOL_
         fi
         if [ "$OS" = "osx" ]; then
             cat <<_EOL_
+https://curl.se/download/curl-7.76.1.tar.xz 64bb5288c39f0840c07d077e30d9052e1cbb9fa6c2dc52523824cc859e679145
 https://github.com/tpoechtrager/osxcross/archive/e0a171828a72a0d7ad4409489033536590008ebf.tar.gz 7ef00c27b76745d4b44e13f291df60318588aa7b5d1788aeba5aca569ac7e989
 _EOL_
+        else
+            echo https://curl.se/download/curl-7.79.1.tar.xz 0606f74b1182ab732a17c11613cbbaf7084f2e6cca432642d0e3ad7c224c3689
         fi
     ) | while read url sha; do
         FILE="${url##*/}"
