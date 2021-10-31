@@ -63,9 +63,13 @@ git submodule update --init --recursive
 
 #### Create base VMs
 
-Note: for better binary compatibility we build Linux binaries on Ubuntu Xenial (16.04), for Mac and Windows builds we use the newer Ubuntu Bionic (18.04).
+Note:
+* Since BitShares-Core 6.0.0, we build Linux and macOS binaries on Ubuntu 18.04 LTS (Bionic), for Windows builds we use Ubuntu 20.04 LTS (Focal).
+* The test-6.0.0 Linux binaries were built with Ubuntu 16.04 LTS (Xenial), macOS binaries were built with Ubuntu 18.04 LTS (Bionic), Windows binaries were built with Ubuntu 20.04 LTS (Focal).
+* For earlier versions of BitShares-Core, for better binary compatibility we build Linux binaries on Ubuntu 16.04 LTS (Xenial), for Mac and Windows builds we use the newer Ubuntu 18.04 LTS (Bionic).
 
 ```
+vendor/gitian-builder/bin/make-base-vm --docker --suite focal
 vendor/gitian-builder/bin/make-base-vm --docker --suite bionic
 vendor/gitian-builder/bin/make-base-vm --docker --suite xenial
 ```
@@ -100,6 +104,22 @@ Enter `./run-gitian --help` to see the available options.
 **Note:** be sure to specify the underlying virtualization mechanism with gitian's environment variables, unless you use KVM!
 (`USE_DOCKER=1` for Docker, `USE_LXC=1` for LXC or `USE_VBOX=1` for VirtualBox.)
 
+### Build only
+
+Examples:
+
+* build Linux binaries for BitShares-Core 5.2.1:
+
+  `./run-gitian -b -O linux 5.2.1`
+
+* build macOS binaries for BitShares-Core test-6.0.0:
+
+  `./run-gitian -b -O osx test-6.0.0`
+
+* build Windows binaries for BitShares-Core 5.2.1:
+
+  `./run-gitian -b -O win 5.2.1`
+
 ### Build and sign
 
 Example: build version 3.1.0 using 3 cores and 8 gigabytes of RAM, then sign with key ID 2d2746cc:
@@ -132,21 +152,23 @@ From time to time it may become necessary to update the build descriptors, e. g.
 Such changes are likely to lead to different build results, which would invalidate existing signatures.
 Also, if a new version of bitshares-core makes such changes necessary, the change might break the build for older versions.
 
-The plan for such breaking changes is:
-
-* create a branch from master, named after the latest supported core version, immediately before the breaking commit
-* future signatures for these supported versions can be added on that branch only
-* immediately after the breaking commit, remove all signatures for no-longer supported versions from master
-
-Note: it is a bit tricky to reproduce the `3.3.1` and `3.3.2` binaries due to changes on minor version of operating systems. Please check [issue #34](https://github.com/bitshares/bitshares-gitian/issues/34) for more info.
+For ease of maintenance, we create a new branch for each new version or pre-release of BitShares-Core, and add signatures (if any) in that branch.
+Some branches may be identical and redundant.
+The master branch is kept clean for development.
 
 ### Existing branches
 
-* [3.3.1](https://github.com/bitshares/bitshares-gitian/tree/3.3.1)
-* [3.3.2](https://github.com/bitshares/bitshares-gitian/tree/3.3.2)
-* [4.0.0](https://github.com/bitshares/bitshares-gitian/tree/4.0.0)
-* [5.0.0](https://github.com/bitshares/bitshares-gitian/tree/5.0.0)
+* [test-6.0.0](https://github.com/bitshares/bitshares-gitian/tree/test-6.0.0)
+* [5.2.1](https://github.com/bitshares/bitshares-gitian/tree/5.2.1)
+* [test-5.2.1](https://github.com/bitshares/bitshares-gitian/tree/test-5.2.1)
+* [5.2.0](https://github.com/bitshares/bitshares-gitian/tree/5.2.0)
+* [test-5.2.0](https://github.com/bitshares/bitshares-gitian/tree/test-5.2.0)
 * [5.1.0](https://github.com/bitshares/bitshares-gitian/tree/5.1.0)
+* [5.0.0](https://github.com/bitshares/bitshares-gitian/tree/5.0.0)
+* [4.0.0](https://github.com/bitshares/bitshares-gitian/tree/4.0.0)
+* [3.3.2](https://github.com/bitshares/bitshares-gitian/tree/3.3.2)
+* [3.3.1](https://github.com/bitshares/bitshares-gitian/tree/3.3.1)
+  Note: it is a bit tricky to reproduce the `3.3.1` and `3.3.2` binaries due to changes on minor version of operating systems. Please check [issue #34](https://github.com/bitshares/bitshares-gitian/issues/34) for more info.
 
 ## Further Reading
 

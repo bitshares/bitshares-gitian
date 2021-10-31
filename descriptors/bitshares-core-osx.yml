@@ -23,8 +23,8 @@ remotes:
 files:
 - supplement.tar.gz
 - zlib-1.2.11.tar.gz
-- openssl-1.1.1i.tar.gz
-- curl-7.74.0.tar.bz2
+- openssl-1.1.1l.tar.gz
+- curl-7.76.1.tar.xz
 - boost_1_69_0.tar.bz2
 - MacOSX10.15.sdk.tar.xz
 - e0a171828a72a0d7ad4409489033536590008ebf.tar.gz
@@ -86,8 +86,8 @@ script: |
 
   # Build curl
   CURL="`echo curl-*`"
-  tar xfj "$CURL"
-  pushd "${CURL%.tar.bz2}"
+  tar xf "$CURL"
+  pushd "${CURL%.tar.xz}"
   export CFLAGS=-mmacosx-version-min=10.13
   CC="ccache ${DARWIN}clang" \
   PKG_CONFIG_PATH="$LIBS/lib/pkgconfig" ./configure --host="${DARWIN%-}" \
