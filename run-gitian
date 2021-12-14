@@ -119,7 +119,7 @@ https://curl.se/download/curl-7.76.1.tar.xz 64bb5288c39f0840c07d077e30d9052e1cbb
 https://github.com/tpoechtrager/osxcross/archive/e0a171828a72a0d7ad4409489033536590008ebf.tar.gz 7ef00c27b76745d4b44e13f291df60318588aa7b5d1788aeba5aca569ac7e989
 _EOL_
         else
-            echo https://curl.se/download/curl-7.80.0.tar.xz dab997c9b08cb4a636a03f2f7f985eaba33279c1c52692430018fae4a4878dc7
+            echo https://curl.se/download/curl-7.80.0.tar.xz a132bd93188b938771135ac7c1f3ac1d3ce507c1fcbef8c471397639214ae2ab
         fi
     ) | while read url sha; do
         FILE="${url##*/}"
