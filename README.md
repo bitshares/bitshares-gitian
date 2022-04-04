@@ -158,6 +158,7 @@ The master branch is kept clean for development.
 
 ### Existing branches
 
+Note: Due to security issues, the source code of the `zlib-1.2.11` library has been removed from the official website (https://zlib.net). As a result, Windows binaries and macOS binaries of BitShares-Core built with the following branches can no longer be rebuilt or verified as-is.
 * [6.0.1](https://github.com/bitshares/bitshares-gitian/tree/6.0.1)
 * [test-6.0.3](https://github.com/bitshares/bitshares-gitian/tree/test-6.0.3)
 * [6.0.0](https://github.com/bitshares/bitshares-gitian/tree/6.0.0)
@@ -171,9 +172,11 @@ The master branch is kept clean for development.
 * [5.1.0](https://github.com/bitshares/bitshares-gitian/tree/5.1.0)
 * [5.0.0](https://github.com/bitshares/bitshares-gitian/tree/5.0.0)
 * [4.0.0](https://github.com/bitshares/bitshares-gitian/tree/4.0.0)
+
+Note: it is a bit tricky to reproduce the `3.3.1` and `3.3.2` binaries due to changes on minor version of operating systems. Please check [issue #34](https://github.com/bitshares/bitshares-gitian/issues/34) for more info.
 * [3.3.2](https://github.com/bitshares/bitshares-gitian/tree/3.3.2)
 * [3.3.1](https://github.com/bitshares/bitshares-gitian/tree/3.3.1)
-  Note: it is a bit tricky to reproduce the `3.3.1` and `3.3.2` binaries due to changes on minor version of operating systems. Please check [issue #34](https://github.com/bitshares/bitshares-gitian/issues/34) for more info.
+
 
 ## Further Reading
 
