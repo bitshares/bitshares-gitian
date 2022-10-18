@@ -157,7 +157,7 @@ Some branches may be identical and redundant.
 The master branch is kept clean for development.
 
 ### Existing branches
-
+Note: Due to security issues, the source code of the `zlib-1.2.12` library has been removed from the official website (https://zlib.net). As a result, Windows binaries and macOS binaries of BitShares-Core built with the following branches can no longer be rebuilt or verified as-is.
 * [test-6.0.4](https://github.com/bitshares/bitshares-gitian/tree/test-6.0.4)
 * [6.0.2](https://github.com/bitshares/bitshares-gitian/tree/6.0.2)
 
