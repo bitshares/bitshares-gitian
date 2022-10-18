@@ -110,7 +110,7 @@ if [ -n "$BUILD" ]; then
         if [ "$OS" = "win" -o "$OS" = "osx" ]; then
             cat <<_EOL_
 https://boostorg.jfrog.io/artifactory/main/release/1.69.0/source/boost_1_69_0.tar.bz2 8f32d4617390d1c2d16f26a27ab60d97807b35440d45891fa340fc2648b04406
-https://zlib.net/zlib-1.2.12.tar.gz 91844808532e5ce316b3c010929493c0244f3d37593afd6de04f71821d5136d9
+https://zlib.net/zlib-1.2.13.tar.gz b3a24de97a8fdbc835b9833169501030b8977031bcb54b3b3ac13740f846ab30
 _EOL_
         fi
         if [ "$OS" = "osx" ]; then
