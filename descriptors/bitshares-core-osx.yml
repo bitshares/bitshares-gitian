@@ -22,7 +22,7 @@ remotes:
   dir: bitshares
 files:
 - supplement.tar.gz
-- zlib-1.2.12.tar.gz
+- zlib-1.2.13.tar.gz
 - openssl-1.1.1p.tar.gz
 - curl-7.76.1.tar.xz
 - boost_1_69_0.tar.bz2
