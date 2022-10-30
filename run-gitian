@@ -106,7 +106,8 @@ if [ -n "$BUILD" ]; then
     tar cfz inputs/supplement.tar.gz --sort=name -C ../.. supplement
 
     (
-        echo https://www.openssl.org/source/openssl-1.1.1p.tar.gz bf61b62aaa66c7c7639942a94de4c9ae8280c08f17d4eac2e44644d9fc8ace6f
+        echo https://www.openssl.org/source/openssl-1.1.1q.tar.gz d7939ce614029cdff0b6c20f0e2e5703158a489a72b2507b8bd51bf8c8fd10ca
+        echo https://curl.se/download/curl-7.86.0.tar.xz 2d61116e5f485581f6d59865377df4463f2e788677ac43222b496d4e49fb627b
         if [ "$OS" = "win" -o "$OS" = "osx" ]; then
             cat <<_EOL_
 https://boostorg.jfrog.io/artifactory/main/release/1.69.0/source/boost_1_69_0.tar.bz2 8f32d4617390d1c2d16f26a27ab60d97807b35440d45891fa340fc2648b04406
@@ -114,12 +115,7 @@ https://zlib.net/zlib-1.2.13.tar.gz b3a24de97a8fdbc835b9833169501030b8977031bcb5
 _EOL_
         fi
         if [ "$OS" = "osx" ]; then
-            cat <<_EOL_
-https://curl.se/download/curl-7.76.1.tar.xz 64bb5288c39f0840c07d077e30d9052e1cbb9fa6c2dc52523824cc859e679145
-https://github.com/tpoechtrager/osxcross/archive/e0a171828a72a0d7ad4409489033536590008ebf.tar.gz 7ef00c27b76745d4b44e13f291df60318588aa7b5d1788aeba5aca569ac7e989
-_EOL_
-        else
-            echo https://curl.se/download/curl-7.83.1.tar.xz 2cb9c2356e7263a1272fd1435ef7cdebf2cd21400ec287b068396deb705c22c4
+            echo https://github.com/tpoechtrager/osxcross/archive/50e86ebca7d14372febd0af8cd098705049161b9.tar.gz d0496d5874a3252c4df7ce24bd724e453f85c513505b970e039fd01638fc1ff7
         fi
     ) | while read url sha; do
         FILE="${url##*/}"
