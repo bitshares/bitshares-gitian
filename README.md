@@ -157,6 +157,7 @@ Some branches may be identical and redundant.
 The master branch is kept clean for development.
 
 ### Existing branches
+* [test-6.1.2](https://github.com/bitshares/bitshares-gitian/tree/test-6.1.2)
 * [test-6.1.1](https://github.com/bitshares/bitshares-gitian/tree/test-6.1.1)
 * [test-6.1.0](https://github.com/bitshares/bitshares-gitian/tree/test-6.1.0)
 
