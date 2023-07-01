@@ -3,7 +3,7 @@ name: bitshares-core-osx
 enable_cache: true
 distro: ubuntu
 suites:
-- bionic
+- focal
 architectures:
 - amd64
 packages:
@@ -17,6 +17,7 @@ packages:
 - doxygen
 - libssl-dev
 - libxml2-dev
+- libz-dev
 remotes:
 - url: https://github.com/bitshares/bitshares-core.git
   dir: bitshares
@@ -108,6 +109,8 @@ script: |
   pushd "${BOOST%.tar.bz2}"
   # See https://github.com/boostorg/context/issues/101
   sed -i '/os.\(name\|platform\)/d;/local tmp = /s=elf=pe=;/local tmp = /s=sysv=ms=' libs/context/build/Jamfile.v2
+  # touch the file to get around an inline sed issue, see https://github.com/docker/machine/issues/4824
+  touch libs/context/build/Jamfile.v2
   echo "using clang : osxcross : ccache ${DARWIN}clang++ : <archiver>${DARWIN}ar <ranlib>${DARWIN}ranlib ;" > user-config.jam
   ./bootstrap.sh --prefix=$LIBS --with-toolset=darwin
   ./b2 --user-config=user-config.jam \
@@ -125,10 +128,20 @@ script: |
 
   cd bitshares
   sed -i '/__DATE__/d' libraries/wallet/wallet_api_impl.cpp
+  # touch the file to get around an inline sed issue, see https://github.com/docker/machine/issues/4824
+  touch libraries/wallet/wallet_api_impl.cpp
   sed -i "/[ep].configure/s/$/ --host=${DARWIN%-} CC=${DARWIN}clang LD=${DARWIN}clang/" libraries/fc/CMakeLists.txt
+  # touch the file to get around an inline sed issue, see https://github.com/docker/machine/issues/4824
+  touch libraries/fc/CMakeLists.txt
   sed -i '/CheckLib\(rary\|cxxAtomic\)/d' libraries/fc/CMakeLists.txt
+  # touch the file to get around an inline sed issue, see https://github.com/docker/machine/issues/4824
+  touch libraries/fc/CMakeLists.txt
   sed -i '1ilist( APPEND PLATFORM_SPECIFIC_LIBS -Wl,-undefined -Wl,dynamic_lookup)' programs/witness_node/CMakeLists.txt
+  # touch the file to get around an inline sed issue, see https://github.com/docker/machine/issues/4824
+  touch programs/witness_node/CMakeLists.txt
   sed -i '1iadd_compile_options( -fvisibility=hidden )' CMakeLists.txt
+  # touch the file to get around an inline sed issue, see https://github.com/docker/machine/issues/4824
+  touch CMakeLists.txt
 
   git tag -d tobuild || true # Remove tag added by gitian-builder
 

@@ -3,7 +3,7 @@ name: bitshares-core-linux
 enable_cache: true
 distro: ubuntu
 suites:
-- bionic
+- focal
 architectures:
 - amd64
 packages:
@@ -15,7 +15,7 @@ packages:
 - libtool
 - automake
 - doxygen
-- libboost1.65-all-dev
+- libboost1.71-all-dev
 - zlib1g-dev
 - openssl
 - pkgconf
@@ -82,13 +82,19 @@ script: |
   cd bitshares
   cp libraries/wallet/wallet_api_impl.cpp{,.orig}
   sed -i '/__DATE__/d' libraries/wallet/wallet_api_impl.cpp
+  # touch the file to get around an inline sed issue, see https://github.com/docker/machine/issues/4824
+  touch libraries/wallet/wallet_api_impl.cpp
   # Workaround for #1791
   sed -i '/target_link_lib/s=..Boost_LIBRARIES.==;/target_link_lib/s=ZLIB_LIBRARIES.=\0 ${Boost_LIBRARIES}=' \
       libraries/fc/CMakeLists.txt
+  # touch the file to get around an inline sed issue, see https://github.com/docker/machine/issues/4824
+  touch libraries/fc/CMakeLists.txt
   # Allow static openssl, see #1980
   sed -i -e '/set..OLD_SUFF/ifind_package(OpenSSL REQUIRED)' \
       -e 's=ssl crypto=${OPENSSL_LIBRARIES} ${BOOST_THREAD_LIBRARY} ${CMAKE_DL_LIBS}=' \
       CMakeLists.txt
+  # touch the file to get around an inline sed issue, see https://github.com/docker/machine/issues/4824
+  touch CMakeLists.txt
 
   git tag -d tobuild || true # Remove tag added by gitian-builder
 
