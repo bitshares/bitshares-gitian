@@ -64,8 +64,9 @@ git submodule update --init --recursive
 #### Create base VMs
 
 Note:
-* Since BitShares-Core 6.0.0, we build Linux and macOS binaries on Ubuntu 18.04 LTS (Bionic), for Windows builds we use Ubuntu 20.04 LTS (Focal).
-* The test-6.0.0 Linux binaries were built with Ubuntu 16.04 LTS (Xenial), macOS binaries were built with Ubuntu 18.04 LTS (Bionic), Windows binaries were built with Ubuntu 20.04 LTS (Focal).
+* Since BitShares-Core test-7.0.0, we build all binaries on Ubuntu 20.04 LTS (Focal).
+* Before BitShares-Core test-7.0.0 and since BitShares-Core 6.0.0, we build Linux and macOS binaries on Ubuntu 18.04 LTS (Bionic), and for Windows builds we use Ubuntu 20.04 LTS (Focal).
+* The test-6.0.0, test-6.0.1 and test-6.0.2 Linux binaries were built with Ubuntu 16.04 LTS (Xenial), macOS binaries were built with Ubuntu 18.04 LTS (Bionic), Windows binaries were built with Ubuntu 20.04 LTS (Focal).
 * For earlier versions of BitShares-Core, for better binary compatibility we build Linux binaries on Ubuntu 16.04 LTS (Xenial), for Mac and Windows builds we use the newer Ubuntu 18.04 LTS (Bionic).
 
 ```
