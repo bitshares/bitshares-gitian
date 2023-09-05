@@ -24,8 +24,8 @@ remotes:
   dir: bitshares
 files:
 - supplement.tar.gz
-- curl-8.1.2.tar.xz
-- openssl-1.1.1u.tar.gz
+- curl-8.2.1.tar.xz
+- openssl-1.1.1v.tar.gz
 script: |
   set -e -o pipefail
 
