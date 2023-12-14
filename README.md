@@ -159,6 +159,7 @@ The master branch is kept clean for development.
 
 ### Existing branches
 
+* [test-7.0.4](https://github.com/bitshares/bitshares-gitian/tree/test-7.0.4)
 * [7.0.1](https://github.com/bitshares/bitshares-gitian/tree/7.0.1)
 * [test-7.0.3](https://github.com/bitshares/bitshares-gitian/tree/test-7.0.3)
 * [7.0.0](https://github.com/bitshares/bitshares-gitian/tree/7.0.0)
