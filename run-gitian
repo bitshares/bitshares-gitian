@@ -107,10 +107,10 @@ if [ -n "$BUILD" ]; then
 
     (
         echo https://www.openssl.org/source/openssl-1.1.1w.tar.gz cf3098950cb4d853ad95c0841f1f9c6d3dc102dccfcacd521d93925208b76ac8
-        echo https://curl.se/download/curl-8.5.0.tar.xz 42ab8db9e20d8290a3b633e7fbb3cec15db34df65fd1015ef8ac1e4723750eeb
+        echo https://curl.se/download/curl-8.6.0.tar.xz 3ccd55d91af9516539df80625f818c734dc6f2ecf9bada33c76765e99121db15
         if [ "$OS" = "win" -o "$OS" = "osx" ]; then
             echo https://boostorg.jfrog.io/artifactory/main/release/1.69.0/source/boost_1_69_0.tar.bz2 8f32d4617390d1c2d16f26a27ab60d97807b35440d45891fa340fc2648b04406
-            echo https://zlib.net/zlib-1.3.tar.gz ff0ba4c292013dbc27530b3a81e1f9a813cd39de01ca5e0f8bf355702efa593e
+            echo https://zlib.net/zlib-1.3.1.tar.gz 9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23
         fi
         if [ "$OS" = "osx" ]; then
             echo https://github.com/tpoechtrager/osxcross/archive/50e86ebca7d14372febd0af8cd098705049161b9.tar.gz d0496d5874a3252c4df7ce24bd724e453f85c513505b970e039fd01638fc1ff7

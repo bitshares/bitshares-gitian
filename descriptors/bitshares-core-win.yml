@@ -22,9 +22,9 @@ remotes:
   dir: bitshares
 files:
 - supplement.tar.gz
-- zlib-1.3.tar.gz
+- zlib-1.3.1.tar.gz
 - openssl-1.1.1w.tar.gz
-- curl-8.5.0.tar.xz
+- curl-8.6.0.tar.xz
 - boost_1_69_0.tar.bz2
 script: |
   set -e -o pipefail
@@ -91,6 +91,7 @@ script: |
                                                     --disable-ldap \
                                                     --with-zlib \
                                                     --without-ssl --with-winssl \
+                                                    --without-libpsl \
                                                     --disable-tftp \
                                                     --disable-ldap
   make $MAKEOPTS install
