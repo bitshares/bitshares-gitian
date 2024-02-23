@@ -97,6 +97,7 @@ script: |
                                                     --disable-ldap \
                                                     --with-zlib="$LIBS" \
                                                     --with-ssl="$LIBS" \
+                                                    --without-libpsl \
                                                     --disable-tftp \
                                                     --disable-ldap
   make -C lib install

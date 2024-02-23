@@ -74,6 +74,7 @@ script: |
                 --disable-ldap \
                 --with-zlib \
                 --with-ssl \
+                --without-libpsl \
                 --disable-tftp \
                 --disable-ldap
   make $MAKEOPTS install
