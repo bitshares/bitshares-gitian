@@ -1,6 +1,6 @@
 This package contains precompiled binaries of the BitShares core software.
 
-See https://how.bitshares.works/ for documentation.
+See https://docs.bitshares.dev/ for documentation.
 
 Source code can be found at https://github.com/bitshares/bitshares-core .
 
