@@ -106,7 +106,7 @@ if [ -n "$BUILD" ]; then
     tar cfz inputs/supplement.tar.gz --sort=name -C ../.. supplement
 
     (
-        echo https://www.openssl.org/source/openssl-1.1.1w.tar.gz cf3098950cb4d853ad95c0841f1f9c6d3dc102dccfcacd521d93925208b76ac8
+        echo https://github.com/openssl/openssl/releases/download/OpenSSL_1_1_1w/openssl-1.1.1w.tar.gz cf3098950cb4d853ad95c0841f1f9c6d3dc102dccfcacd521d93925208b76ac8
         echo https://curl.se/download/curl-8.6.0.tar.xz 3ccd55d91af9516539df80625f818c734dc6f2ecf9bada33c76765e99121db15
         if [ "$OS" = "win" -o "$OS" = "osx" ]; then
             echo https://boostorg.jfrog.io/artifactory/main/release/1.69.0/source/boost_1_69_0.tar.bz2 8f32d4617390d1c2d16f26a27ab60d97807b35440d45891fa340fc2648b04406
